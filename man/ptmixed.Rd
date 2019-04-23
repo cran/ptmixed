@@ -4,16 +4,14 @@
 \alias{ptmixed}
 \title{Poisson-Tweedie generalized linear mixed model}
 \usage{
-ptmixed(fixef.formula, id, time, offset = NULL, data, npoints = 10,
+ptmixed(fixef.formula, id, offset = NULL, data, npoints = 10,
   hessian = T, trace = T, theta.start = NULL, reltol = 1e-08,
-  maxit = NULL)
+  maxit = c(10000, 100))
 }
 \arguments{
 \item{fixef.formula}{A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}}
 
 \item{id}{A variable to distinguish observations from the same subject.}
-
-\item{time}{A numeric variable indicating time.}
 
 \item{offset}{An offset to be added to the linear predictor. Default is \code{NULL}.}
 
@@ -60,25 +58,26 @@ X = model.matrix(~group + time)
 mu = exp(X \%*\% beta + rand.int + offset)
 y = rep(NA, n*t)
 library(tweeDEseq)
-for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = 0.5, max = 1000)
+for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
 
 data.long = data.frame(y, group, time, id, offset)
 rm(list = setdiff(ls(), 'data.long'))
 
 # estimate the model
-# quick example of execution (see below for more accurate, but lower, estimation)
-fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id, time = data.long$time,
+# very quick (and inaccurate) example of execution 
+# (see fit2 below for a much more accurate, but slower, estimation)
+fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
               offset = data.long$offset, data = data.long, npoints = 3, 
-              hessian = FALSE, trace = FALSE, reltol = 1e-3,  maxit = c(0,10))
+              hessian = FALSE, trace = TRUE, reltol = 1e-3)
 # print summary:
 summary(fit1, wald = FALSE)
 
 # more accurate estimation (increase npoints and maxit, reduce reltol,
 # evaluate hessian matrix at mle) - this takes more time
 \donttest{
-fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id, time = data.long$time,
-              offset = data.long$offset, data = data.long, npoints = 7, 
-              hessian = TRUE, trace = TRUE, reltol = 1e-6)
+fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
+              offset = data.long$offset, data = data.long, npoints = 10, 
+              hessian = TRUE, trace = TRUE, reltol = 1e-8)
 # print and get summary:
 x2 = summary(fit2, wald = TRUE)
 ls(x2)

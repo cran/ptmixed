@@ -9,7 +9,6 @@
 #' @param y Response vector (discrete)
 #' @param X Design matrix for the fixed effects
 #' @param Z Design matrix for the random effects
-#' @param t Time variable
 #' @param id Id indicator (it should be numeric)
 #' @param offset Offset term to be added to the linear predictor
 #' @param GHk Number of quadrature points (default is 10)
@@ -20,11 +19,15 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptmixed}} and the examples therein
 
-loglik.pt.1re <- function(beta, D, a, Sigma, y, X, Z, t, id, offset = NULL, GHk = 10, tol = 1e-323) {
+loglik.pt.1re <- function(beta, D, a, Sigma, y, X, Z, id, offset = NULL, 
+                          GHk = 10, tol = 1e-323) {
   requireNamespace('tweeDEseq')
   requireNamespace('mvtnorm')
   with.offset = !is.null(offset)
   RE.size = 1
+  t = length(y) / length(unique(id))
+  if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
+                       the unbalanced case is not yet implemented (check back soon!)')
   GHs <- GHpoints.pt.1re(y, id, X, Z, beta, D, a, Sigma, offset, RE.size = RE.size,
                          GHk, tol = tol) # added offset argument
   if (with.offset) Delta.ij <- c(X %*% beta + c(offset))

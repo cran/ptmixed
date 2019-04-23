@@ -1,18 +1,37 @@
-get.initial.theta = function(fixef.formula, data, y, id, time) {
+get.initial.theta = function(fixef.formula, data, y, id) {
   # NB: the offset should be added as offset(log.offset) in fixef.formula!
+  # warning messages
+  warn1 = 'The method of moments estimate of the power parameter is close to 1. This may be an indication that a Poisson mixed model could fit the data sufficiently well: check if the maximum likelihood estimate of the power parameter is very close to 1'
+  warn2 = 'A preliminary fit of a negative binomial mixed model indicates that a Poisson mixed model would fit the data better than the negative binomial one'
+  warn3 = 'The response variable may be underdispersed. You may want to consider using either a Poisson mixed model or a model suitable for an underdispersed dependent response'
   requireNamespace('GLMMadaptive')
+  a.init = a.moment.estimator(y)
+  if (a.init >= 0.95) {
+    warning(warn1)
+    a.init = 0.9
+  }
   # start with Poisson glmm:
-  poi.glmm = try(GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, data = data, 
-                         family = poisson(), nAGQ=21,
-                         initial_values = list(betas = poisson())),
-                 silent = T)
+  poi.glmm = try(
+    GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
+                 data = data, family = poisson(), nAGQ=21,
+                 initial_values = list(betas = poisson()),
+                 control = list(iter_EM = 100, iter_qN = 100)),
+             silent = T)
   # try NB glmm
   nb.glmm = try(
-    GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, data = data, 
-                family = negbin.family(), n_phis = 1, nAGQ=21,
+    GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
+                data = data, family = GLMMadaptive::negative.binomial(), 
+                n_phis = 1, nAGQ=21,
                 initial_values = list("betas" = poi.glmm$coefficients,
-                                      "D" = poi.glmm$D)),
-    silent = T)
+                                      "D" = poi.glmm$D),
+                control = list(iter_EM = 100, iter_qN = 100)),
+            silent = T)
+  
+  if (inherits(nb.glmm, 'try-error')) {
+    if (nb.glmm == "Error in mixed_fit(y, X, Z, X_zi, Z_zi, id, offset, offset_zi, family,  : \n  A value greater than 22000 has been detected for the shape/size\n parameter of the negative binomial distribution. This typically\n indicates that the Poisson model would be better. Otherwise,\n adjust the 'max_phis_value' control argument.\n")
+      warning(warn2)
+  }
+  
   # initial beta and variance:
   from.poi = from.nb = F
   if (!inherits(poi.glmm, 'try-error')) {
@@ -47,83 +66,21 @@ get.initial.theta = function(fixef.formula, data, y, id, time) {
       }
     }
   }
-  # deviance and power:
-  D.init = harm.cond.dev(y, id, time)
-  if (D.init <= 1) D.init = geom.cond.dev(y, id, time)
-  if (D.init <= 1) D.init = conditional.deviance(y, id, time)
-  if (D.init <= 1) D.init = 2
-  a.init = a.moment.estimator(y)
-  if (a.init >= 1) a.init = 0.5
+  # deviance:
+  temp = conditional.deviance(x = y, id)
+  D.init = temp$harmonic
+  if (D.init <= 1) D.init = temp$geometric
+  if (D.init <= 1) D.init = temp$arithmetic
+  if (D.init <= 1) {
+    warning(warn3)
+    D.init = 1.5
+  }
+  # transformation of D, a, S:
   D.trasf.init = log(D.init-1)
   a.trasf.init = log(1-a.init)
   S.trasf.init = log(S.init)
   theta.init = c(beta.init, D.trasf.init, a.trasf.init, S.trasf.init)
   return(theta.init)
-}
-
-negbin.family <- function () {
-  # taken from vignettes of GLMMadaptive package
-  stats <- make.link(link = "log")
-  log_dens <- function (y, eta, mu_fun, phis, eta_zi) {
-    # the log density function
-    phis <- exp(phis)
-    mu <- mu_fun(eta)
-    log_mu_phis <- log(mu + phis)
-    comp1 <- lgamma(y + phis) - lgamma(phis) - lgamma(y + 1)
-    comp2 <- phis * log(phis) - phis * log_mu_phis
-    comp3 <- y * log(mu) - y * log_mu_phis
-    out <- comp1 + comp2 + comp3
-    attr(out, "mu_y") <- mu
-    out
-  }
-  score_eta_fun <- function (y, mu, phis, eta_zi) {
-    # the derivative of the log density w.r.t. mu
-    phis <- exp(phis)
-    mu_phis <- mu + phis
-    comp2 <- - phis / mu_phis
-    comp3 <- y / mu - y / mu_phis
-    # the derivative of mu w.r.t. eta (this depends on the chosen link function)
-    mu.eta <- mu
-    (comp2 + comp3) * mu.eta
-  }
-  score_phis_fun <- function (y, mu, phis, eta_zi) {
-    # the derivative of the log density w.r.t. phis
-    phis <- exp(phis)
-    mu_phis <- mu + phis
-    comp1 <- digamma(y + phis) - digamma(phis)
-    comp2 <- log(phis) + 1 - log(mu_phis) - phis / mu_phis
-    comp3 <- - y / mu_phis
-    (comp1 + comp2 + comp3) * phis
-  }
-  structure(list(family = "user Neg Binom", link = stats$name, linkfun = stats$linkfun,
-                 linkinv = stats$linkinv, log_dens = log_dens,
-                 score_eta_fun = score_eta_fun, score_phis_fun = score_phis_fun),
-            class = "family")
-}
-
-conditional.deviance = function(x, id, time) {
-  df.long = data.frame(x, id, 'time' = time+1)
-  df.wide = reshape(df.long, idvar = 'id', timevar = 'time', direction = 'wide')[,-1]
-  deviance.within = apply(df.wide, 1, function(x) var(x)/mean(x))
-  return(mean(deviance.within, na.rm = T))
-}
-
-geom.cond.dev = function(x, id, time) {
-  df.long = data.frame(x, id, time = time + 1)
-  df.wide = reshape(df.long, idvar = "id", timevar = "time", 
-                    direction = "wide")[, -1]
-  deviance.within = apply(df.wide, 1, function(x) var(x)/mean(x))
-  #return(mean(deviance.within, na.rm = T))
-  return(exp(mean(log(deviance.within), na.rm = T)))
-}
-
-harm.cond.dev = function(x, id, time) {
-  df.long = data.frame(x, id, time = time + 1)
-  df.wide = reshape(df.long, idvar = "id", timevar = "time", 
-                    direction = "wide")[, -1]
-  deviance.within = apply(df.wide, 1, function(x) var(x)/mean(x))
-  #return(mean(deviance.within, na.rm = T))
-  return(1/(mean(1/deviance.within, na.rm = T)))
 }
 
 a.moment.estimator = function(x) {
@@ -136,4 +93,24 @@ a.moment.estimator = function(x) {
   t = 3*dev - 2
   a.est = 1 + s / (s+t-r)
   return(a.est)
+}
+
+conditional.deviance = function(x, id) {
+  df.long = data.frame(x, id)
+  df.long$seq = NA
+  ids = unique(id)
+  n = length(ids)
+  for (i in 1:n) {
+    rows = which(df.long$id == ids[i])
+    mi = length(rows)
+    df.long$seq[rows] = seq(1:mi)
+  }
+  df.wide = reshape(df.long, idvar = 'id', timevar = 'seq', direction = 'wide')[,-1]
+  deviance.within = apply(df.wide, 1, function(x) var(x)/mean(x))
+  arit.mean = mean(deviance.within, na.rm = T)
+  geom.mean = exp(mean(log(deviance.within), na.rm = T))
+  harmon.mean = 1/(mean(1/deviance.within, na.rm = T))
+  out = list('arithmetic' = arit.mean, 'geometric' = geom.mean,
+             'harmonic' = harmon.mean)
+  return(out)
 }

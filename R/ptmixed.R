@@ -5,7 +5,6 @@
 #' 
 #' @param fixef.formula A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}
 #' @param id A variable to distinguish observations from the same subject.
-#' @param time A numeric variable indicating time.
 #' @param offset An offset to be added to the linear predictor. Default is \code{NULL}.
 #' @param data A data frame containing the variables declared in \code{fixef.formula}.
 #' @param npoints Number of quadrature points employed in the adaptive quadrature. Default is 10.
@@ -42,49 +41,48 @@
 #' mu = exp(X %*% beta + rand.int + offset)
 #' y = rep(NA, n*t)
 #' library(tweeDEseq)
-#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = 0.5, max = 1000)
+#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
 #' 
 #' data.long = data.frame(y, group, time, id, offset)
 #' rm(list = setdiff(ls(), 'data.long'))
 #' 
 #' # estimate the model
-#' # quick example of execution (see below for more accurate, but lower, estimation)
-#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id, time = data.long$time,
+#' # very quick (and inaccurate) example of execution 
+#' # (see fit2 below for a much more accurate, but slower, estimation)
+#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 3, 
-#'               hessian = FALSE, trace = FALSE, reltol = 1e-3,  maxit = c(0,10))
+#'               hessian = FALSE, trace = TRUE, reltol = 1e-3)
 #' # print summary:
 #' summary(fit1, wald = FALSE)
 #' 
 #' # more accurate estimation (increase npoints and maxit, reduce reltol,
 #' # evaluate hessian matrix at mle) - this takes more time
 #' \donttest{
-#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id, time = data.long$time,
-#'               offset = data.long$offset, data = data.long, npoints = 7, 
-#'               hessian = TRUE, trace = TRUE, reltol = 1e-6)
+#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
+#'               offset = data.long$offset, data = data.long, npoints = 10, 
+#'               hessian = TRUE, trace = TRUE, reltol = 1e-8)
 #' # print and get summary:
 #' x2 = summary(fit2, wald = TRUE)
 #' ls(x2)
 #' }
 
-ptmixed = function(fixef.formula, id, time, offset = NULL,
+ptmixed = function(fixef.formula, id, offset = NULL,
                    data, npoints = 10, hessian = T, trace = T,
-                   theta.start = NULL, reltol = 1e-8, maxit = NULL) {
+                   theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100)) {
   # preliminary checks:
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
-  if (length(unique(id))*length(unique(time)) != dim(data)[1]) {
-    stop('Dataset appears to be unbalanced. Code currently implemented for balanced data.')
-  }
+  t = dim(data)[1] / length(unique(id))
+  if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
+                       the unbalanced case is not yet implemented (check back soon!)')
   if (npoints == 1) stop('Use at least 2 quadrature points')
-  if (npoints%%1 !=0) stop('npoints should be a natural number > 1')
-  if (is.null(maxit)) maxit = c(500, 100)
+  if (npoints %%1 !=0) stop('npoints should be a natural number > 1')
   if (!is.null(maxit)) {
-    if (length(maxit) == 1) maxit = rep(maxit, 2)
+    if (length(maxit) == 1) maxit = c(maxit, 100)
   }
   # identify elements
   y = data[, all.vars(fixef.formula[[2]])]
   X = model.matrix(fixef.formula[-2], data = data)
   Z = as.matrix(model.matrix(~1, data = data))
-  t = length(unique(time))
   # fix id:
   id = as.numeric(as.factor(id))
   # optim control values:
@@ -103,7 +101,7 @@ ptmixed = function(fixef.formula, id, time, offset = NULL,
     }
     else df.glmmad = cbind(data, 'id' = id)
     theta.init = get.initial.theta(fixef.formula = fixef.glmmad, data = df.glmmad, 
-                                   y = y, id = id, time = time)
+                                   y = y, id = id)
     if (exp(tail(theta.init,1)) < 0.001) warning('Starting value of variance of random intercept is < 0.001.
       Consider using a GLM instead of a GLMM.')
   }
@@ -120,32 +118,33 @@ ptmixed = function(fixef.formula, id, time, offset = NULL,
   # rename correctly elements in theta.init
   names(theta.init) = c(colnames(X), 'D', 'a', 'sigma2')
   # negative loglikelihood:
-  nlogl = function(theta, offset, y, X, Z, t, id, GHk) {
+  nlogl = function(theta, offset, y, X, Z, id, GHk) {
     p = length(theta)
     beta = theta[1:(p-3)]
     D = 1+exp(theta[p-2])
     a = 1-exp(theta[p-1])
     Sigma = as.matrix(exp(theta[p]))
-    ll = loglik.pt.1re(beta, D, a, Sigma, y, X, Z, t, id, offset = offset, GHk)
+    ll = loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = offset, GHk)
     return(-ll)
   }
   # check that starting point is finite:
-  try.init1 = try(nlogl(theta.init, offset, y, X, Z, t, id = id, GHk = npoints))
+  try.init1 = try(nlogl(theta.init, offset, y, X, Z, id = id, GHk = npoints))
   if (trace) cat(paste('initial loglik value:', try.init1));cat('\n')
   if(is.infinite(try.init1)) {
     try.init2 = Inf
     while(is.infinite(try.init2)) {
       new.a.init = runif(1, -10, 1)
-      theta.init[6] = log(1-new.a.init)
+      p = length(theta.init)
+      theta.init[p-1] = log(1 - new.a.init)
       #print(paste('proposed a.init:', new.a.init))
-      try.init2 = try(nlogl(theta.init, offset, y, X, Z, t, id, GHk = npoints))
+      try.init2 = try(nlogl(theta.init, offset, y, X, Z, id, GHk = npoints))
       print(paste('retry: initial loglik value:', try.init2))
     }
   }
   # optimization: try Nelder-Mead
   if (trace) cat('Beginning optimization with Nelder-Mead:')
   mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", offset = offset,
-                   y = y, X = X, Z = Z, t = t, id = id, GHk = npoints, hessian = F,
+                   y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
                    control = optim.control.nm) )
   # check convergence
   redo = redo2 = F
@@ -167,7 +166,7 @@ ptmixed = function(fixef.formula, id, time, offset = NULL,
     print('Optimization with Nelder-Mead was not successful. Trying BFGS...')
     if (trace) cat('Beginning optimization with BFGS:')
     mle = try( optim(theta.init, nlogl, method = "BFGS", offset = offset,
-                     y = y, X = X, Z = Z, t = t, id = id, GHk = npoints, hessian = F,
+                     y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
                      control = optim.control.bfgs) )
     check1 = exists('mle')
     if (!check1) redo2 = T
@@ -191,7 +190,7 @@ ptmixed = function(fixef.formula, id, time, offset = NULL,
     requireNamespace('numDeriv')
     logl.hess = function(theta) {
       ll = nlogl(theta, offset = offset, y = y, X = X, Z = Z, 
-                 t = t, id = id, GHk = npoints)
+                 id = id, GHk = npoints)
       return(ll)
     }
     hess = numDeriv::hessian(func = logl.hess, x = mle$par)

@@ -4,8 +4,8 @@
 \alias{loglik.pt.1re}
 \title{Loglikelihood of Poisson-Tweedie generalized linear mixed model with random intercept}
 \usage{
-loglik.pt.1re(beta, D, a, Sigma, y, X, Z, t, id, offset = NULL,
-  GHk = 10, tol = 9.88131291682493e-324)
+loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 10,
+  tol = 9.88131291682493e-324)
 }
 \arguments{
 \item{beta}{Vector of regression coefficients}
@@ -21,8 +21,6 @@ loglik.pt.1re(beta, D, a, Sigma, y, X, Z, t, id, offset = NULL,
 \item{X}{Design matrix for the fixed effects}
 
 \item{Z}{Design matrix for the random effects}
-
-\item{t}{Time variable}
 
 \item{id}{Id indicator (it should be numeric)}
 
