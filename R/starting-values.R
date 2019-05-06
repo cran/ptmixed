@@ -69,9 +69,9 @@ get.initial.theta = function(fixef.formula, data, y, id) {
   # deviance:
   temp = conditional.deviance(x = y, id)
   D.init = temp$harmonic
-  if (D.init <= 1) D.init = temp$geometric
-  if (D.init <= 1) D.init = temp$arithmetic
-  if (D.init <= 1) {
+  if (D.init <= 1.1) D.init = temp$geometric
+  if (D.init <= 1.1) D.init = temp$arithmetic
+  if (D.init <= 1.1) {
     warning(warn3)
     D.init = 1.5
   }

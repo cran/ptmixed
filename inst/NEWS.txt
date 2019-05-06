@@ -1,0 +1,14 @@
+VERSION 0.0.3:
+* NEWS file added to the package
+* fixed typo in message on initial loglikelihood value (when trace = T in ptmixed function)
+* included exceptions and warnings for the case that maxit[1] and/or maxit[2] are set = 0 
+
+VERSION 0.0.2:
+* maxit argument default in function ptmixed changed to c(1e4, 100)
+* function ptmixed does not require a time argument any more
+* function that computes starting values improved
+* added warnings that a simpler Poisson mixed model could provide a better fit
+* added warning when initial estimate of the variance parameter is < 0.001
+
+VERSION 0.0.1:
+* first version of the package

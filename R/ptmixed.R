@@ -79,6 +79,7 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)
   }
+  if (identical(maxit, c(0, 0))) stop("Have you set maxit = c(0, 0)???")
   # identify elements
   y = data[, all.vars(fixef.formula[[2]])]
   X = model.matrix(fixef.formula[-2], data = data)
@@ -129,7 +130,7 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   }
   # check that starting point is finite:
   try.init1 = try(nlogl(theta.init, offset, y, X, Z, id = id, GHk = npoints))
-  if (trace) cat(paste('initial loglik value:', try.init1));cat('\n')
+  if (trace) cat(paste('initial loglik value:', -try.init1));cat('\n')
   if(is.infinite(try.init1)) {
     try.init2 = Inf
     while(is.infinite(try.init2)) {
@@ -138,33 +139,37 @@ ptmixed = function(fixef.formula, id, offset = NULL,
       theta.init[p-1] = log(1 - new.a.init)
       #print(paste('proposed a.init:', new.a.init))
       try.init2 = try(nlogl(theta.init, offset, y, X, Z, id, GHk = npoints))
-      print(paste('retry: initial loglik value:', try.init2))
+      print(paste('retry: initial loglik value:', -try.init2))
     }
   }
-  # optimization: try Nelder-Mead
-  if (trace) cat('Beginning optimization with Nelder-Mead:')
-  mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", offset = offset,
-                   y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
-                   control = optim.control.nm) )
-  # check convergence
+  # convergence checks
   redo = redo2 = F
-  check1 = exists('mle')
-  if (!check1) redo = T
-  # if it does not exist, redo
-  if (check1) {
-    check2 = inherits(mle, 'try-error')
-    if (check2) redo = T
-    # if it has error status, redo
-    if (check2==F) {
-      check3 = (mle$convergence == 0)
-      if (!check3) redo = T
+  # optimization: try Nelder-Mead
+  if (maxit[1] > 0) {
+    if (trace) cat('Beginning optimization with Nelder-Mead:'); cat('\n')
+    mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", offset = offset,
+                     y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
+                     control = optim.control.nm) )
+    
+    check1 = exists('mle')
+    if (!check1) redo = T
+    # if it does not exist, redo
+    if (check1) {
+      check2 = inherits(mle, 'try-error')
+      if (check2) redo = T
+      # if it has error status, redo
+      if (check2==F) {
+        check3 = (mle$convergence == 0)
+        if (!check3) redo = T
+      }
     }
+    if (trace & redo == F) print('Optimization was successful')
   }
-  if (trace & redo == F) print('Optimization was successful')
+  if (maxit[1] == 0) redo = T
   # if it failed: try BFGS
-  if (redo) {
-    print('Optimization with Nelder-Mead was not successful. Trying BFGS...')
-    if (trace) cat('Beginning optimization with BFGS:')
+  if (redo & maxit[2] > 0) {
+    if (maxit[1] > 0) print('Optimization with Nelder-Mead was not successful. Trying BFGS...'); cat('\n')
+    if (trace) cat('Beginning optimization with BFGS:'); cat('\n')
     mle = try( optim(theta.init, nlogl, method = "BFGS", offset = offset,
                      y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
                      control = optim.control.bfgs) )
@@ -183,10 +188,11 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     if (trace & redo2 == F) print('Second optimization was successful')
   }
   # if no convergence
+  if (redo & maxit[2] == 0) stop('Convergence not reached with Nelder-Mead. Give BFGS a try!')
   if (redo2) stop('Convergence not reached')
   # if convergence:
   if (!redo2 & hessian) {
-    if (trace) cat('\n'); cat('Computing hessian...')
+    if (trace) cat('\n'); cat('Convergence reached. Computing hessian...'); cat('\n')
     requireNamespace('numDeriv')
     logl.hess = function(theta) {
       ll = nlogl(theta, offset = offset, y = y, X = X, Z = Z, 
