@@ -37,14 +37,16 @@ the Nelder-Mead method and, if this fails, by the BFGS method}
 \value{
 A list containing the following elements: maximum likelihood estimate (\code{mle});  value of the
 loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
-the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}.
+the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}; the number of quadrature points 
+used (\code{quad.points}) and the starting value used in the optimization (\code{theta.init}); 
+relevant warnings (\code{warnings}).
 }
 \description{
 Estimates the Poisson-Tweedie generalized linear mixed model with random intercept.
 Likelihood approximation for the model is based on the adaptive Gauss-Hermite quadrature rule.
 }
 \examples{
-# generate data
+### generate data ###
 set.seed(123)
 n = 6; t = 3
 id = rep(1:n, each = t)
@@ -63,8 +65,9 @@ for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
 data.long = data.frame(y, group, time, id, offset)
 rm(list = setdiff(ls(), 'data.long'))
 
-# estimate the model
-# very quick (and inaccurate) example of execution 
+### estimate the model ###
+
+# 1) very quick (and inaccurate) example of execution 
 # (see fit2 below for a much more accurate, but slower, estimation)
 fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
               offset = data.long$offset, data = data.long, npoints = 3, 
@@ -72,8 +75,8 @@ fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
 # print summary:
 summary(fit1, wald = FALSE)
 
-# more accurate estimation (increase npoints and maxit, reduce reltol,
-# evaluate hessian matrix at mle) - this takes more time
+# 2) more accurate estimation (increase npoints and maxit, reduce reltol,
+# evaluate hessian matrix at mle) - slower, it takes approx. 1 minute
 \donttest{
 fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
               offset = data.long$offset, data = data.long, npoints = 10, 

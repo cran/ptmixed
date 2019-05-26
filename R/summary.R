@@ -15,7 +15,7 @@
 summary.ptmm = function(object, wald = T, ...) {
   if (wald) {
     if ('hessian' %in% ls(object) == F) stop('Hessian matrix not available in object. 
-  Hessian is needed to return standard errors and Wald test. Use pt.model with option hessian = T to obtain it.')
+  Hessian is needed to return standard errors and Wald test. Use pt.model with option wald = F to obtain it.')
   }
   ncov = length(object$mle) - 3
   beta = object$mle[1:ncov]
@@ -54,5 +54,4 @@ summary.ptmm = function(object, wald = T, ...) {
   cat(paste('Variance =', round(sigma2,2), '\n'))
   out = list('logl' = round(object$logl,2), 'coefficients' = coef.table,
              'D'= D, 'a' = a, 'sigma2' = sigma2)
-  return(out)
 }

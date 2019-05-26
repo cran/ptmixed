@@ -1,14 +1,18 @@
-VERSION 0.0.3:
+VERSION 0.0.4 (may 2019):
 * NEWS file added to the package
+* ptmixed now outputs extra information (number of quadrature points used, initial values, warnings)
+* A mistake in the computation of the GH quadrature points was introduced from version 0.0.2. This has been fixed now
+
+VERSION 0.0.3 (may 2019):
 * fixed typo in message on initial loglikelihood value (when trace = T in ptmixed function)
 * included exceptions and warnings for the case that maxit[1] and/or maxit[2] are set = 0 
 
-VERSION 0.0.2:
+VERSION 0.0.2 (apr 2019):
 * maxit argument default in function ptmixed changed to c(1e4, 100)
 * function ptmixed does not require a time argument any more
 * function that computes starting values improved
-* added warnings that a simpler Poisson mixed model could provide a better fit
+* added warning with indication that a simpler Poisson mixed model may fit the data sufficiently well
 * added warning when initial estimate of the variance parameter is < 0.001
 
-VERSION 0.0.1:
+VERSION 0.0.1 (feb 2019):
 * first version of the package

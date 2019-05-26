@@ -1,14 +1,13 @@
 get.initial.theta = function(fixef.formula, data, y, id) {
   # NB: the offset should be added as offset(log.offset) in fixef.formula!
   # warning messages
-  warn1 = 'The method of moments estimate of the power parameter is close to 1. This may be an indication that a Poisson mixed model could fit the data sufficiently well: check if the maximum likelihood estimate of the power parameter is very close to 1'
-  warn2 = 'A preliminary fit of a negative binomial mixed model indicates that a Poisson mixed model would fit the data better than the negative binomial one'
-  warn3 = 'The response variable may be underdispersed. You may want to consider using either a Poisson mixed model or a model suitable for an underdispersed dependent response'
+  warn1 = 'A preliminary fit of a negative binomial mixed model indicates that a Poisson mixed model would fit the data better than the negative binomial one'
+  warn2 = 'The response variable may be underdispersed. You may want to consider using either a Poisson mixed model or a model suitable for an underdispersed dependent response'
+  warning.list = list()
   requireNamespace('GLMMadaptive')
   a.init = a.moment.estimator(y)
-  if (a.init >= 0.95) {
-    warning(warn1)
-    a.init = 0.9
+  if (a.init >= 0.8) {
+    a.init = 0.5
   }
   # start with Poisson glmm:
   poi.glmm = try(
@@ -28,8 +27,10 @@ get.initial.theta = function(fixef.formula, data, y, id) {
             silent = T)
   
   if (inherits(nb.glmm, 'try-error')) {
-    if (nb.glmm == "Error in mixed_fit(y, X, Z, X_zi, Z_zi, id, offset, offset_zi, family,  : \n  A value greater than 22000 has been detected for the shape/size\n parameter of the negative binomial distribution. This typically\n indicates that the Poisson model would be better. Otherwise,\n adjust the 'max_phis_value' control argument.\n")
-      warning(warn2)
+    if (nb.glmm == "Error in mixed_fit(y, X, Z, X_zi, Z_zi, id, offset, offset_zi, family,  : \n  A value greater than 22000 has been detected for the shape/size\n parameter of the negative binomial distribution. This typically\n indicates that the Poisson model would be better. Otherwise,\n adjust the 'max_phis_value' control argument.\n") {
+      warning(warn1)
+      warning.list = c(warning.list, 'A Poisson GLMM could be enough')
+    }
   }
   
   # initial beta and variance:
@@ -72,7 +73,8 @@ get.initial.theta = function(fixef.formula, data, y, id) {
   if (D.init <= 1.1) D.init = temp$geometric
   if (D.init <= 1.1) D.init = temp$arithmetic
   if (D.init <= 1.1) {
-    warning(warn3)
+    warning(warn2)
+    warning.list = c(warning.list, 'Data may be underdispersed')
     D.init = 1.5
   }
   # transformation of D, a, S:
@@ -80,7 +82,8 @@ get.initial.theta = function(fixef.formula, data, y, id) {
   a.trasf.init = log(1-a.init)
   S.trasf.init = log(S.init)
   theta.init = c(beta.init, D.trasf.init, a.trasf.init, S.trasf.init)
-  return(theta.init)
+  out = list('theta.init' = theta.init, 'warnings' = warning.list)
+  return(out)
 }
 
 a.moment.estimator = function(x) {

@@ -8,9 +8,9 @@ GHpoints.pt.1re <- function (y, id, X, Z, beta, D, a, Sigma, offset = NULL,
   n <- length(unique(id))
   GH <- gauher(GHk) # returns ascissae and weights for Gauss-Hermite quadrature
   b <- as.matrix(expand.grid(rep(list(GH$x), RE.size)), drop = F)
-  b <- sqrt(2) * b
   wGH <- as.matrix(expand.grid(rep(list(GH$w), RE.size)), drop = F)
   wGH <- 2^(RE.size/2) * apply(wGH, 1, prod) * exp(rowSums(b * b))
+  b <- sqrt(2) * b
   ###########
   fn <- function (b, y.i, delta.ij, Z.ij, tol) {
     log.p.b <- dnorm(b, 0, sd = sqrt(Sigma), log = T)

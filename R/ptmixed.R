@@ -20,14 +20,16 @@
 #' the Nelder-Mead method and, if this fails, by the BFGS method
 #' @return A list containing the following elements: maximum likelihood estimate (\code{mle});  value of the
 #' loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
-#' the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}.
+#' the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}; the number of quadrature points 
+#' used (\code{quad.points}) and the starting value used in the optimization (\code{theta.init}); 
+#' relevant warnings (\code{warnings}).
 #' @import stats
 #' @importFrom utils tail
 #' @export
 #' @author Mirko Signorelli
 #' @seealso \code{\link{summary.ptmm}}
 #' @examples
-#' # generate data
+#' ### generate data ###
 #' set.seed(123)
 #' n = 6; t = 3
 #' id = rep(1:n, each = t)
@@ -46,8 +48,9 @@
 #' data.long = data.frame(y, group, time, id, offset)
 #' rm(list = setdiff(ls(), 'data.long'))
 #' 
-#' # estimate the model
-#' # very quick (and inaccurate) example of execution 
+#' ### estimate the model ###
+#' 
+#' # 1) very quick (and inaccurate) example of execution 
 #' # (see fit2 below for a much more accurate, but slower, estimation)
 #' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 3, 
@@ -55,8 +58,8 @@
 #' # print summary:
 #' summary(fit1, wald = FALSE)
 #' 
-#' # more accurate estimation (increase npoints and maxit, reduce reltol,
-#' # evaluate hessian matrix at mle) - this takes more time
+#' # 2) more accurate estimation (increase npoints and maxit, reduce reltol,
+#' # evaluate hessian matrix at mle) - slower, it takes approx. 1 minute
 #' \donttest{
 #' fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 10, 
@@ -101,10 +104,15 @@ ptmixed = function(fixef.formula, id, offset = NULL,
       df.glmmad = cbind(data, 'id' = id, 'offset' = offset)
     }
     else df.glmmad = cbind(data, 'id' = id)
-    theta.init = get.initial.theta(fixef.formula = fixef.glmmad, data = df.glmmad, 
+    temp = get.initial.theta(fixef.formula = fixef.glmmad, data = df.glmmad, 
                                    y = y, id = id)
-    if (exp(tail(theta.init,1)) < 0.001) warning('Starting value of variance of random intercept is < 0.001.
+    theta.init = temp$theta.init
+    warning.list = temp$warnings
+    if (exp(tail(theta.init,1)) < 0.001) {
+      warning('Starting value of variance of random intercept is < 0.001.
       Consider using a GLM instead of a GLMM.')
+      warning.list = c(warning.list, 'Initial variance random intercept < 0.001')
+    }
   }
   else if (!is.null(theta.start)) {
     q = length(theta.start)
@@ -210,10 +218,17 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   mle.est[ncov + 3] = exp(mle.est[ncov + 3])
   names(mle.est)[1:3 + ncov] = c('D', 'a', 'sigma2')
   logl = - mle$value
+  # transform back initial starting value
+  q = length(theta.init)
+  theta.init[q-2] = 1+exp(theta.init[q-2])
+  theta.init[q-1] = 1-exp(theta.init[q-1])
+  theta.init[q] = exp(theta.init[q])
   if (!redo2 & hessian == F) out = list('mle' = mle.est, 'logl' = logl,
-                                        'convergence' = mle$convergence)
+        'convergence' = mle$convergence, 'quad.points' = npoints,
+        'theta.init' = theta.init, 'warnings' = warning.list)
   if (!redo2 & hessian) out = list('mle' = mle.est, 'logl' = logl, 'hessian' = hess,
-                                   'convergence' = mle$convergence)
+         'convergence' = mle$convergence, 'quad.points' = npoints,
+         'theta.init' = theta.init, 'warnings' = warning.list)
   class(out)=c('ptmm', 'list')
   return(out)
 }
