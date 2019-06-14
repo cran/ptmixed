@@ -13,14 +13,16 @@
 #' @param offset Offset term to be added to the linear predictor
 #' @param GHk Number of quadrature points (default is 10)
 #' @param tol Tolerance value for the evaluation of the probability mass function of the Poisson-Tweedie distribution
-#' @return The loglikelihood value obtained using a Gauss-Hermite quadrature 
+#' @param GHs Quadrature points at which to evaluate the loglikelihood. If \code{NULL} (default value), 
+#' the GH quadrature points are computed internally
+#' @return The loglikelihood value obtained using a Gauss-Hermite quadrature
 #' approximation with \code{GHk} quadrature points.
 #' @export
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptmixed}} and the examples therein
 
 loglik.pt.1re <- function(beta, D, a, Sigma, y, X, Z, id, offset = NULL, 
-                          GHk = 10, tol = 1e-323) {
+                          GHk = 10, tol = 1e-323, GHs = NULL) {
   requireNamespace('tweeDEseq')
   requireNamespace('mvtnorm')
   with.offset = !is.null(offset)
@@ -28,8 +30,11 @@ loglik.pt.1re <- function(beta, D, a, Sigma, y, X, Z, id, offset = NULL,
   t = length(y) / length(unique(id))
   if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
                        the unbalanced case is not yet implemented (check back soon!)')
-  GHs <- GHpoints.pt.1re(y, id, X, Z, beta, D, a, Sigma, offset, RE.size = RE.size,
-                         GHk, tol = tol) # added offset argument
+  if (is.null(GHs)) {
+    GHs <- GHpoints.pt.1re(y=y, id=id, X=X, Z=Z, beta=beta, D=D, a=a, 
+                       Sigma=Sigma, offset=offset, RE.size = RE.size,
+                       GHk=GHk, tol = tol)
+  }
   if (with.offset) Delta.ij <- c(X %*% beta + c(offset))
   else Delta.ij <- c(X %*% beta)
   # calculate log Lik
@@ -53,7 +58,6 @@ loglik.pt.1re <- function(beta, D, a, Sigma, y, X, Z, id, offset = NULL,
   ff <- function (yy) {
     log.p.y.b <- rowsum(dpt.yvec.mumatr(yvec = yy, mu.matr = mus, D, a, 
                                         log = T, tol = tol), id)
-    #    log(mapply(dPT, x = yy, mu = mus, D = D, a = a, tol = 1e-500))
     c((GHs$det.Bs * exp(log.p.y.b + log.p.b)) %*% GHs$wGH)
   }
   p.y <- ff(y)

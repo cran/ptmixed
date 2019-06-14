@@ -30,7 +30,7 @@ summary.ptmm = function(object, wald = T, ...) {
       se.beta = sqrt(diag(inv.hess)[1:ncov])
     }
     else {
-      red.hess = object$hessian
+      red.hess = object$hessian[1:ncov, 1:ncov]
       check.pdef2 = matrixcalc::is.positive.definite(red.hess, tol = 1e-10)
       if (check.pdef2) {
         warning('Full hessian not positive definite. Standard errors are estimated

@@ -6,7 +6,7 @@
 \usage{
 ptmixed(fixef.formula, id, offset = NULL, data, npoints = 10,
   hessian = T, trace = T, theta.start = NULL, reltol = 1e-08,
-  maxit = c(10000, 100))
+  maxit = c(10000, 100), freq.updates = 200)
 }
 \arguments{
 \item{fixef.formula}{A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}}
@@ -33,6 +33,13 @@ parameter estimates are computed automatically by the function.}
 
 \item{maxit}{Vector containing the maximum number of iterations used in optim by
 the Nelder-Mead method and, if this fails, by the BFGS method}
+
+\item{freq.updates}{Number of iterations after which the quadrature points are updated when the Nelder-Mead
+algorithm is used for the optimization. Default value is 200. To update the quadrature points at every iteration 
+(note that this typically makes the computation 2.5x slower), set \code{freq.updates = 1} 
+or \code{freq.updates = NA}. The function first tries to optimize the loglikelihood using the Nelder-Mead
+algorithm, updating the quadrature points every \code{freq.updates} iterations. If this fails to converge,
+a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.}
 }
 \value{
 A list containing the following elements: maximum likelihood estimate (\code{mle});  value of the
@@ -46,7 +53,7 @@ Estimates the Poisson-Tweedie generalized linear mixed model with random interce
 Likelihood approximation for the model is based on the adaptive Gauss-Hermite quadrature rule.
 }
 \examples{
-### generate data ###
+# generate data
 set.seed(123)
 n = 6; t = 3
 id = rep(1:n, each = t)
@@ -65,25 +72,25 @@ for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
 data.long = data.frame(y, group, time, id, offset)
 rm(list = setdiff(ls(), 'data.long'))
 
-### estimate the model ###
-
-# 1) very quick (and inaccurate) example of execution 
-# (see fit2 below for a much more accurate, but slower, estimation)
+# 1) Quick example (only 5 quadrature points, hessian and SEs not computed)
+# estimate the model
 fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
-              offset = data.long$offset, data = data.long, npoints = 3, 
-              hessian = FALSE, trace = TRUE, reltol = 1e-3)
+              offset = data.long$offset, data = data.long, npoints = 5, 
+              freq.updates = 200, hessian = FALSE, trace = TRUE)
 # print summary:
 summary(fit1, wald = FALSE)
 
-# 2) more accurate estimation (increase npoints and maxit, reduce reltol,
-# evaluate hessian matrix at mle) - slower, it takes approx. 1 minute
 \donttest{
+# 2) Full computation, including hessian evaluation and using more quadrature points
+# estimate the model
 fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
               offset = data.long$offset, data = data.long, npoints = 10, 
-              hessian = TRUE, trace = TRUE, reltol = 1e-8)
+              freq.updates = 200, hessian = TRUE, trace = TRUE)
 # print and get summary:
-x2 = summary(fit2, wald = TRUE)
-ls(x2)
+results = summary(fit2, wald = TRUE)
+ls(results)
+# view table with estimates of regression coefficients, standard errors and Wald test:
+results$coefficients
 }
 }
 \seealso{

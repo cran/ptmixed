@@ -18,6 +18,12 @@
 #' @param reltol Relative tolerance to be used in optim. Default to 1e-8
 #' @param maxit Vector containing the maximum number of iterations used in optim by
 #' the Nelder-Mead method and, if this fails, by the BFGS method
+#' @param freq.updates Number of iterations after which the quadrature points are updated when the Nelder-Mead
+#' algorithm is used for the optimization. Default value is 200. To update the quadrature points at every iteration 
+#' (note that this typically makes the computation 2.5x slower), set \code{freq.updates = 1} 
+#' or \code{freq.updates = NA}. The function first tries to optimize the loglikelihood using the Nelder-Mead
+#' algorithm, updating the quadrature points every \code{freq.updates} iterations. If this fails to converge,
+#' a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.
 #' @return A list containing the following elements: maximum likelihood estimate (\code{mle});  value of the
 #' loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
 #' the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}; the number of quadrature points 
@@ -29,7 +35,7 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{summary.ptmm}}
 #' @examples
-#' ### generate data ###
+#' # generate data
 #' set.seed(123)
 #' n = 6; t = 3
 #' id = rep(1:n, each = t)
@@ -48,30 +54,31 @@
 #' data.long = data.frame(y, group, time, id, offset)
 #' rm(list = setdiff(ls(), 'data.long'))
 #' 
-#' ### estimate the model ###
-#' 
-#' # 1) very quick (and inaccurate) example of execution 
-#' # (see fit2 below for a much more accurate, but slower, estimation)
+#' # 1) Quick example (only 5 quadrature points, hessian and SEs not computed)
+#' # estimate the model
 #' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
-#'               offset = data.long$offset, data = data.long, npoints = 3, 
-#'               hessian = FALSE, trace = TRUE, reltol = 1e-3)
+#'               offset = data.long$offset, data = data.long, npoints = 5, 
+#'               freq.updates = 200, hessian = FALSE, trace = TRUE)
 #' # print summary:
 #' summary(fit1, wald = FALSE)
 #' 
-#' # 2) more accurate estimation (increase npoints and maxit, reduce reltol,
-#' # evaluate hessian matrix at mle) - slower, it takes approx. 1 minute
 #' \donttest{
+#' # 2) Full computation, including hessian evaluation and using more quadrature points
+#' # estimate the model
 #' fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 10, 
-#'               hessian = TRUE, trace = TRUE, reltol = 1e-8)
+#'               freq.updates = 200, hessian = TRUE, trace = TRUE)
 #' # print and get summary:
-#' x2 = summary(fit2, wald = TRUE)
-#' ls(x2)
+#' results = summary(fit2, wald = TRUE)
+#' ls(results)
+#' # view table with estimates of regression coefficients, standard errors and Wald test:
+#' results$coefficients
 #' }
 
 ptmixed = function(fixef.formula, id, offset = NULL,
                    data, npoints = 10, hessian = T, trace = T,
-                   theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100)) {
+                   theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100),
+                   freq.updates = 200) {
   # preliminary checks:
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
   t = dim(data)[1] / length(unique(id))
@@ -82,19 +89,22 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)
   }
-  if (identical(maxit, c(0, 0))) stop("Have you set maxit = c(0, 0)???")
   # identify elements
   y = data[, all.vars(fixef.formula[[2]])]
   X = model.matrix(fixef.formula[-2], data = data)
   Z = as.matrix(model.matrix(~1, data = data))
   # fix id:
   id = as.numeric(as.factor(id))
+  # NB: updates at every iteration coded as NA (but it can also be provided = 1)
+  if (freq.updates == 1) freq.updates = NA
   # optim control values:
   optim.control.nm = list(maxit = maxit[1], reltol = reltol)
   optim.control.bfgs = list(maxit = maxit[2], reltol = reltol)
+  if (!is.na(freq.updates)) optim.control.nm = list(maxit = freq.updates, reltol = reltol)
   if (trace) {
     optim.control.nm = list(trace = 1, REPORT = 1, maxit = maxit[1], reltol = reltol)
     optim.control.bfgs = list(trace = 1, REPORT = 1, maxit = maxit[2], reltol = reltol)
+    if (!is.na(freq.updates)) optim.control.nm = list(trace = 1, REPORT = 1, maxit = freq.updates, reltol = reltol)
   }
   # starting values:
   if (is.null(theta.start)) {
@@ -105,12 +115,12 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     }
     else df.glmmad = cbind(data, 'id' = id)
     temp = get.initial.theta(fixef.formula = fixef.glmmad, data = df.glmmad, 
-                                   y = y, id = id)
+                             y = y, id = id)
     theta.init = temp$theta.init
     warning.list = temp$warnings
     if (exp(tail(theta.init,1)) < 0.001) {
       warning('Starting value of variance of random intercept is < 0.001.
-      Consider using a GLM instead of a GLMM.')
+              Consider using a GLM instead of a GLMM.')
       warning.list = c(warning.list, 'Initial variance random intercept < 0.001')
     }
   }
@@ -127,60 +137,107 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   # rename correctly elements in theta.init
   names(theta.init) = c(colnames(X), 'D', 'a', 'sigma2')
   # negative loglikelihood:
-  nlogl = function(theta, offset, y, X, Z, id, GHk) {
+  nlogl = function(theta, offset, y, X, Z, id, GHk, GHs = NULL) {
     p = length(theta)
     beta = theta[1:(p-3)]
     D = 1+exp(theta[p-2])
     a = 1-exp(theta[p-1])
     Sigma = as.matrix(exp(theta[p]))
-    ll = loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = offset, GHk)
+    ll = loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = offset, GHk, GHs = GHs)
     return(-ll)
   }
+  
   # check that starting point is finite:
-  try.init1 = try(nlogl(theta.init, offset, y, X, Z, id = id, GHk = npoints))
-  if (trace) cat(paste('initial loglik value:', -try.init1));cat('\n')
+  try.init1 = try(nlogl(theta.init, offset, y, X, Z, id = id, GHk = npoints, GHs = NULL))
+  if (trace) cat(paste('initial loglik value:', round(-try.init1, 2))); cat('\n')
   if(is.infinite(try.init1)) {
     try.init2 = Inf
     while(is.infinite(try.init2)) {
       new.a.init = runif(1, -10, 1)
       p = length(theta.init)
       theta.init[p-1] = log(1 - new.a.init)
-      #print(paste('proposed a.init:', new.a.init))
-      try.init2 = try(nlogl(theta.init, offset, y, X, Z, id, GHk = npoints))
-      print(paste('retry: initial loglik value:', -try.init2))
+      try.init2 = try(nlogl(theta.init, offset, y, X, Z, id, GHk = npoints, GHs = NULL))
+      cat('\n')
+      cat(paste('retry: initial loglik value:', round(-try.init2, 2)))
     }
   }
-  # convergence checks
+  
   redo = redo2 = F
   # optimization: try Nelder-Mead
-  if (maxit[1] > 0) {
-    if (trace) cat('Beginning optimization with Nelder-Mead:'); cat('\n')
-    mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", offset = offset,
-                     y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
-                     control = optim.control.nm) )
+  stop = F
+  niter = 0
+  # starting values
+  p = length(theta.init)
+  theta.curr = theta.init
+  beta.curr = theta.init[1:(p-3)]
+  D.curr = 1+exp(theta.init[p-2])
+  a.curr = 1-exp(theta.init[p-1])
+  S.curr = as.matrix(exp(theta.init[p]))
+  GHs = NULL
+  if (trace) {
+    cat('\n')
+    cat(paste('Initial D =', round(D.curr, 2), 'a =', round(a.curr, 2), 'S =', round(S.curr, 2)))
+    cat('\n')
+    cat('Beginning optimization with Nelder-Mead:'); cat('\n')
+  }
+  
+  while (stop == F) {
+    GH.up = try( GHpoints.pt.1re(y = y, id = id, X = X, Z = Z, 
+                           beta = beta.curr, D = D.curr, a = a.curr, Sigma = S.curr, 
+                           offset = offset, RE.size = 1, GHk = npoints, tol = 1e-323),
+                  silent = T)
     
-    check1 = exists('mle')
-    if (!check1) redo = T
-    # if it does not exist, redo
-    if (check1) {
-      check2 = inherits(mle, 'try-error')
-      if (check2) redo = T
-      # if it has error status, redo
-      if (check2==F) {
-        check3 = (mle$convergence == 0)
-        if (!check3) redo = T
+    if (exists('GH.up')) {
+      if (!inherits(GH.up, 'try-error')) GHs = GH.up
+      else warning('Quadrature points not updated')
+    }
+    mle = try( optim(theta.curr, nlogl, method = "Nelder-Mead", offset = offset,
+                      y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
+                      GHs = GHs, control = optim.control.nm) )
+    # check convergence
+    temp1 = exists('mle')
+    if (!temp1) { # proceed with BFGS
+      stop = T
+      redo = T
+    }
+    else if (temp1) {
+      temp2 = inherits(mle, 'try-error')
+      if (temp2) { # proceed with BFGS
+        stop = T
+        redo = T
+      }
+      else if (!temp2) { # check if convergence reached
+        niter = niter + mle$counts[1]
+        temp3 = (mle$convergence == 0)
+        if (temp3) stop = T
+        else if (niter > maxit[1]) {
+          stop = T
+          redo = T
+        }
+        else {
+          theta.curr = mle$par
+          p = length(theta.curr)
+          beta.curr = theta.curr[1:(p-3)]
+          D.curr = 1+exp(theta.curr[p-2])
+          a.curr = 1-exp(theta.curr[p-1])
+          S.curr = as.matrix(exp(theta.curr[p]))
+          if (trace) print(paste('D =', round(D.curr, 2), 
+                      'a =', round(a.curr, 2), 'S =', round(S.curr, 2)))
+        }
       }
     }
-    if (trace & redo == F) print('Optimization was successful')
   }
-  if (maxit[1] == 0) redo = T
+  cat('\n')
+  cat(paste('Total number of iterations =', niter))
+  cat('\n')
+  
   # if it failed: try BFGS
-  if (redo & maxit[2] > 0) {
-    if (maxit[1] > 0) print('Optimization with Nelder-Mead was not successful. Trying BFGS...'); cat('\n')
+  if (redo) {
+    print('Optimization with Nelder-Mead was not successful. Trying BFGS...'); cat('\n')
     if (trace) cat('Beginning optimization with BFGS:'); cat('\n')
     mle = try( optim(theta.init, nlogl, method = "BFGS", offset = offset,
                      y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
-                     control = optim.control.bfgs) )
+                     control = optim.control.bfgs, GHs = NULL) )
     check1 = exists('mle')
     if (!check1) redo2 = T
     # if it does not exist, redo
@@ -196,7 +253,6 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     if (trace & redo2 == F) print('Second optimization was successful')
   }
   # if no convergence
-  if (redo & maxit[2] == 0) stop('Convergence not reached with Nelder-Mead. Give BFGS a try!')
   if (redo2) stop('Convergence not reached')
   # if convergence:
   if (!redo2 & hessian) {
@@ -227,8 +283,8 @@ ptmixed = function(fixef.formula, id, offset = NULL,
         'convergence' = mle$convergence, 'quad.points' = npoints,
         'theta.init' = theta.init, 'warnings' = warning.list)
   if (!redo2 & hessian) out = list('mle' = mle.est, 'logl' = logl, 'hessian' = hess,
-         'convergence' = mle$convergence, 'quad.points' = npoints,
-         'theta.init' = theta.init, 'warnings' = warning.list)
+        'convergence' = mle$convergence, 'quad.points' = npoints,
+        'theta.init' = theta.init, 'warnings' = warning.list)
   class(out)=c('ptmm', 'list')
   return(out)
 }

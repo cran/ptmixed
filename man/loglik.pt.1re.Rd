@@ -5,7 +5,7 @@
 \title{Loglikelihood of Poisson-Tweedie generalized linear mixed model with random intercept}
 \usage{
 loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 10,
-  tol = 9.88131291682493e-324)
+  tol = 9.88131291682493e-324, GHs = NULL)
 }
 \arguments{
 \item{beta}{Vector of regression coefficients}
@@ -29,9 +29,12 @@ loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 10,
 \item{GHk}{Number of quadrature points (default is 10)}
 
 \item{tol}{Tolerance value for the evaluation of the probability mass function of the Poisson-Tweedie distribution}
+
+\item{GHs}{Quadrature points at which to evaluate the loglikelihood. If \code{NULL} (default value), 
+the GH quadrature points are computed internally}
 }
 \value{
-The loglikelihood value obtained using a Gauss-Hermite quadrature 
+The loglikelihood value obtained using a Gauss-Hermite quadrature
 approximation with \code{GHk} quadrature points.
 }
 \description{
