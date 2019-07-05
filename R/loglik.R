@@ -3,7 +3,7 @@
 #' Evaluates the loglikelihood of a Poisson-Tweedie generalized linear mixed model 
 #' with random intercept, using the adaptive Gauss-Hermite quadrature rule.
 #' @param beta Vector of regression coefficients
-#' @param D Deviance
+#' @param D Dispersion parameter (must be > 1)
 #' @param a Power parameter (must be < 1)
 #' @param Sigma A matrix with the variance of the random intercept
 #' @param y Response vector (discrete)

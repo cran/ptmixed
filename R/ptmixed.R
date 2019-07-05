@@ -11,7 +11,7 @@
 #' @param hessian Logical value. If \code{TRUE}, the hessian matrix is evaluated at the MLE. Default is \code{TRUE}.
 #' @param trace Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.
 #' @param theta.start Numeric vector comprising initial parameter values for the
-#' vector of regression coefficients, the deviance parameter, the power parameter 
+#' vector of regression coefficients, the dispersion parameter, the power parameter 
 #' and the variance of the random intercept (to be specified exactlyin this order!). 
 #' Default is \code{NULL}: initial
 #' parameter estimates are computed automatically by the function.
@@ -24,7 +24,8 @@
 #' or \code{freq.updates = NA}. The function first tries to optimize the loglikelihood using the Nelder-Mead
 #' algorithm, updating the quadrature points every \code{freq.updates} iterations. If this fails to converge,
 #' a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.
-#' @return A list containing the following elements: maximum likelihood estimate (\code{mle});  value of the
+#' @return A list containing the following elements: function's call (\code{call}); 
+#' maximum likelihood estimate (\code{mle});  value of the
 #' loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
 #' the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}; the number of quadrature points 
 #' used (\code{quad.points}) and the starting value used in the optimization (\code{theta.init}); 
@@ -33,7 +34,7 @@
 #' @importFrom utils tail
 #' @export
 #' @author Mirko Signorelli
-#' @seealso \code{\link{summary.ptmm}}
+#' @seealso \code{\link{summary.ptglmm}}
 #' @examples
 #' # generate data
 #' set.seed(123)
@@ -79,6 +80,7 @@ ptmixed = function(fixef.formula, id, offset = NULL,
                    data, npoints = 10, hessian = T, trace = T,
                    theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100),
                    freq.updates = 200) {
+  call = match.call()
   # preliminary checks:
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
   t = dim(data)[1] / length(unique(id))
@@ -128,7 +130,7 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     q = length(theta.start)
     p = dim(X)[2]
     if (q != p+3) stop('Wrong number of elements in theta.start')
-    if (theta.start[p+1] <= 1) stop('Initial deviance value should be > 1')
+    if (theta.start[p+1] <= 1) stop('Initial dispersion value should be > 1')
     if (theta.start[p+2] >= 1) stop('Initial power value should be < 1')
     if (theta.start[p+3] <= 1e-6) stop('Initial variance value should be > 0')
     theta.init = c(theta.start[1:p], log(theta.start[p+1]-1),
@@ -279,12 +281,14 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   theta.init[q-2] = 1+exp(theta.init[q-2])
   theta.init[q-1] = 1-exp(theta.init[q-1])
   theta.init[q] = exp(theta.init[q])
-  if (!redo2 & hessian == F) out = list('mle' = mle.est, 'logl' = logl,
-        'convergence' = mle$convergence, 'quad.points' = npoints,
-        'theta.init' = theta.init, 'warnings' = warning.list)
-  if (!redo2 & hessian) out = list('mle' = mle.est, 'logl' = logl, 'hessian' = hess,
-        'convergence' = mle$convergence, 'quad.points' = npoints,
-        'theta.init' = theta.init, 'warnings' = warning.list)
-  class(out)=c('ptmm', 'list')
+  if (!redo2 & hessian == F) out = list('call' = call,
+    'mle' = mle.est, 'logl' = logl,
+    'convergence' = mle$convergence, 'quad.points' = npoints,
+    'theta.init' = theta.init, 'warnings' = warning.list)
+  if (!redo2 & hessian) out = list('call' = call,
+    'mle' = mle.est, 'logl' = logl, 'hessian' = hess,
+    'convergence' = mle$convergence, 'quad.points' = npoints,
+    'theta.init' = theta.init, 'warnings' = warning.list)
+  class(out)=c('ptglmm', 'list')
   return(out)
 }

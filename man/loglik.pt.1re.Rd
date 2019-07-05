@@ -10,7 +10,7 @@ loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 10,
 \arguments{
 \item{beta}{Vector of regression coefficients}
 
-\item{D}{Deviance}
+\item{D}{Dispersion parameter (must be > 1)}
 
 \item{a}{Power parameter (must be < 1)}
 

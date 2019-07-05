@@ -1,10 +1,17 @@
 ---
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# ptmixed 0.2.1
+* Released: July 2019
+* Added function to compute the empirical Bayes estimates of the random intercept
+* Class name of `ptmixed` output changed from ptmm to ptglmm
+* Corrected typo in `summary` function (the MLE of the dispersion parameter was wrongly called "deviance" instead of dispersion in the previous versions)
+* Added NEWS file
 
 # ptmixed 0.1.2
 

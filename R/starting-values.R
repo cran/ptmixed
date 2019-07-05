@@ -67,8 +67,8 @@ get.initial.theta = function(fixef.formula, data, y, id) {
       }
     }
   }
-  # deviance:
-  temp = conditional.deviance(x = y, id)
+  # dispersion:
+  temp = conditional.dispersion(x = y, id)
   D.init = temp$harmonic
   if (D.init <= 1.1) D.init = temp$geometric
   if (D.init <= 1.1) D.init = temp$arithmetic
@@ -89,16 +89,16 @@ get.initial.theta = function(fixef.formula, data, y, id) {
 a.moment.estimator = function(x) {
   requireNamespace('moments')
   mean = mean(x)
-  dev = var(x)/mean(x)
+  disp = var(x)/mean(x)
   skew = moments::skewness(x)
-  r = skew * sqrt(mean * dev^3)
-  s = (dev-1)^2
-  t = 3*dev - 2
+  r = skew * sqrt(mean * disp^3)
+  s = (disp-1)^2
+  t = 3*disp - 2
   a.est = 1 + s / (s+t-r)
   return(a.est)
 }
 
-conditional.deviance = function(x, id) {
+conditional.dispersion = function(x, id) {
   df.long = data.frame(x, id)
   df.long$seq = NA
   ids = unique(id)
@@ -109,10 +109,10 @@ conditional.deviance = function(x, id) {
     df.long$seq[rows] = seq(1:mi)
   }
   df.wide = reshape(df.long, idvar = 'id', timevar = 'seq', direction = 'wide')[,-1]
-  deviance.within = apply(df.wide, 1, function(x) var(x)/mean(x))
-  arit.mean = mean(deviance.within, na.rm = T)
-  geom.mean = exp(mean(log(deviance.within), na.rm = T))
-  harmon.mean = 1/(mean(1/deviance.within, na.rm = T))
+  dispersion.within = apply(df.wide, 1, function(x) var(x)/mean(x))
+  arit.mean = mean(dispersion.within, na.rm = T)
+  geom.mean = exp(mean(log(dispersion.within), na.rm = T))
+  harmon.mean = 1/(mean(1/dispersion.within, na.rm = T))
   out = list('arithmetic' = arit.mean, 'geometric' = geom.mean,
              'harmonic' = harmon.mean)
   return(out)

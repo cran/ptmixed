@@ -24,7 +24,7 @@ ptmixed(fixef.formula, id, offset = NULL, data, npoints = 10,
 \item{trace}{Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.}
 
 \item{theta.start}{Numeric vector comprising initial parameter values for the
-vector of regression coefficients, the deviance parameter, the power parameter 
+vector of regression coefficients, the dispersion parameter, the power parameter 
 and the variance of the random intercept (to be specified exactlyin this order!). 
 Default is \code{NULL}: initial
 parameter estimates are computed automatically by the function.}
@@ -42,7 +42,8 @@ algorithm, updating the quadrature points every \code{freq.updates} iterations. 
 a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.}
 }
 \value{
-A list containing the following elements: maximum likelihood estimate (\code{mle});  value of the
+A list containing the following elements: function's call (\code{call}); 
+maximum likelihood estimate (\code{mle});  value of the
 loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
 the hessian evaluated at the mle (\code{hessian}), if \code{hessian = T}; the number of quadrature points 
 used (\code{quad.points}) and the starting value used in the optimization (\code{theta.init}); 
@@ -94,7 +95,7 @@ results$coefficients
 }
 }
 \seealso{
-\code{\link{summary.ptmm}}
+\code{\link{summary.ptglmm}}
 }
 \author{
 Mirko Signorelli

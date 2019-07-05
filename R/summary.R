@@ -1,9 +1,9 @@
-#' Summary results for Poisson-Tweedie generalized linear mixed model
-#'
+#' Summarizing Poisson-Tweedie mixed model estimation results
+#' 
 #' Provides parameter estimates, standard errors and univariate Wald test
 #' for the Poisson-Tweedie generalized linear mixed model
 #' 
-#' @param object an object of class \code{ptmm} (obtained from \code{pt.mixed}).
+#' @param object an object of class \code{ptglmm} (obtained from \code{ptmixed}).
 #' @param wald logical. If \code{TRUE}, standard errors and univariate Wald test are computed. Default is \code{TRUE}.
 #' @param ... Further arguments passed to or from other methods.
 #' @return A list with the following elements: \code{logl}, \code{coefficients}, 
@@ -12,7 +12,7 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptmixed}} and the examples therein
  
-summary.ptmm = function(object, wald = T, ...) {
+summary.ptglmm = function(object, wald = T, ...) {
   if (wald) {
     if ('hessian' %in% ls(object) == F) stop('Hessian matrix not available in object. 
   Hessian is needed to return standard errors and Wald test. Use pt.model with option wald = F to obtain it.')
@@ -49,7 +49,7 @@ summary.ptmm = function(object, wald = T, ...) {
   cat('Parameter estimates:\n')
   print(coef.table)
   cat('\n')
-  cat(paste('Deviance =', round(D,2), '\n'))
+  cat(paste('Dispersion =', round(D,2), '\n'))
   cat(paste('Power =', round(a,2), '\n'))
   cat(paste('Variance =', round(sigma2,2), '\n'))
   out = list('logl' = round(object$logl,2), 'coefficients' = coef.table,
