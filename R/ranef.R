@@ -9,6 +9,7 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptmixed}}
 #' @examples
+#' \donttest{
 #' # generate data
 #' set.seed(123)
 #' n = 6; t = 3
@@ -35,6 +36,7 @@
 #'               
 #' # obtain random effect estimates
 #' ranef(obj = fit1)
+#' }
 
 ranef <- function (obj) {
   if (class(obj)[1] != 'ptglmm') stop('obj should be of class ptglmm')

@@ -1,6 +1,7 @@
-#' Poisson-Tweedie generalized linear mixed model
+#' Negative binomial generalized linear mixed model
 #'
-#' Estimates the Poisson-Tweedie generalized linear mixed model with random intercept.
+#' Estimates the negative binomial generalized linear mixed model with random intercept
+#' (here, the NB distribution is obtained as special case of the Poisson-Tweedie distribution when a = 0).
 #' Likelihood approximation for the model is based on the adaptive Gauss-Hermite quadrature rule.
 #' 
 #' @param fixef.formula A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}
@@ -11,8 +12,8 @@
 #' @param hessian Logical value. If \code{TRUE}, the hessian matrix is evaluated at the MLE to derive the observed Fisher information matrix. Default is \code{TRUE}.
 #' @param trace Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.
 #' @param theta.start Numeric vector comprising initial parameter values for the
-#' vector of regression coefficients, the dispersion parameter, the power parameter 
-#' and the variance of the random intercept (to be specified exactlyin this order!). 
+#' vector of regression coefficients, the dispersion parameter (using the same parametrization of \code{ptmixed}) 
+#' and the variance of the random intercept. 
 #' Default is \code{NULL}: initial
 #' parameter estimates are computed automatically by the function.
 #' @param reltol Relative tolerance to be used in optim. Default to 1e-8
@@ -52,14 +53,14 @@
 #' mu = exp(X %*% beta + rand.int + offset)
 #' y = rep(NA, n*t)
 #' library(tweeDEseq)
-#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
+#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = 0, max = 1000)
 #' 
 #' data.long = data.frame(y, group, time, id, offset)
 #' rm(list = setdiff(ls(), 'data.long'))
 #' 
 #' # 1) Quick example (5 quadrature points, hessian and SEs not computed)
 #' # estimate the model
-#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
+#' fit1 = nbmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 5, 
 #'               freq.updates = 200, hessian = FALSE, trace = TRUE)
 #' # print summary:
@@ -68,7 +69,7 @@
 #' \donttest{
 #' # 2) Full computation, including hessian evaluation and using more quadrature points
 #' # estimate the model
-#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
+#' fit2 = nbmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 10, 
 #'               freq.updates = 200, hessian = TRUE, trace = TRUE)
 #' # print and get summary:
@@ -78,7 +79,7 @@
 #' results$coefficients
 #' }
 
-ptmixed = function(fixef.formula, id, offset = NULL,
+nbmixed = function(fixef.formula, id, offset = NULL,
                    data, npoints = 10, hessian = T, trace = T,
                    theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100),
                    freq.updates = 200, min.var.init = 1e-3) {
@@ -121,20 +122,20 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     else df.glmmad = cbind(data, 'id' = id)
     temp = get.initial.theta(fixef.formula = fixef.glmmad, data = df.glmmad, 
                              y = y, id = id)
-    theta.init = temp$theta.init
+    q = length(temp$theta.init)
+    theta.init = temp$theta.init[-(q-1)]
     warning.list = temp$warnings
   }
   else if (!is.null(theta.start)) {
     q = length(theta.start)
     p = dim(X)[2]
-    if (q != p+3) stop('Wrong number of elements in theta.start')
+    if (q != p+2) stop('Wrong number of elements in theta.start')
     if (theta.start[p+1] <= 1) stop('Initial dispersion value should be > 1')
-    if (theta.start[p+2] >= 1) stop('Initial power value should be < 1')
     theta.init = c(theta.start[1:p], log(theta.start[p+1]-1),
-                   log(1-theta.start[p+2]), log(theta.start[p+3]))
+                   log(theta.start[p+2]))
   }
   # rename correctly elements in theta.init
-  names(theta.init) = c(colnames(X), 'D', 'a', 'sigma2')
+  names(theta.init) = c(colnames(X), 'D', 'sigma2')
   # do a check on the initial starting value of the variance:
   include.ranef = T
   if (exp(tail(theta.init,1)) < min.var.init) {
@@ -143,38 +144,23 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     'Initial variance value < min.var.init. A GLM was estimated (hence sigma2 = 0)')
     include.ranef = F
   }
-  # estimate PT glm
+  # estimate NB glm
   if (!include.ranef) {
-    mle = ptglm(fixef.formula, offset = offset, 
+    mle = nbglm(fixef.formula, offset = offset, 
               data = data, maxit = c(500, 1e5), 
               trace = trace, theta.start = NULL)
   }
-  # estimate PT glmm
+  # estimate NB glmm
   if (include.ranef) {
     # negative loglikelihood:
     nlogl = function(theta, offset, y, X, Z, id, GHk, GHs = NULL) {
       p = length(theta)
-      beta = theta[1:(p-3)]
-      D = 1+exp(theta[p-2])
-      a = 1-exp(theta[p-1])
+      beta = theta[1:(p-2)]
+      D = 1+exp(theta[p-1])
       Sigma = as.matrix(exp(theta[p]))
-      ll = loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = offset, GHk, GHs = GHs)
+      ll = loglik.pt.1re(beta, D, a = 0, Sigma, y, X, Z, id, 
+                         offset = offset, GHk, GHs = GHs)
       return(-ll)
-    }
-    
-    # check that starting point is finite:
-    try.init1 = try(nlogl(theta.init, offset, y, X, Z, id = id, GHk = npoints, GHs = NULL))
-    if (trace) cat(paste('initial loglik value:', round(-try.init1, 2))); cat('\n')
-    if(is.infinite(try.init1)) {
-      try.init2 = Inf
-      while(is.infinite(try.init2)) {
-        new.a.init = runif(1, -10, 1)
-        p = length(theta.init)
-        theta.init[p-1] = log(1 - new.a.init)
-        try.init2 = try(nlogl(theta.init, offset, y, X, Z, id, GHk = npoints, GHs = NULL))
-        cat('\n')
-        cat(paste('retry: initial loglik value:', round(-try.init2, 2)))
-      }
     }
     
     redo = redo2 = F
@@ -184,21 +170,20 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     # starting values
     p = length(theta.init)
     theta.curr = theta.init
-    beta.curr = theta.init[1:(p-3)]
-    D.curr = 1+exp(theta.init[p-2])
-    a.curr = 1-exp(theta.init[p-1])
+    beta.curr = theta.init[1:(p-2)]
+    D.curr = 1+exp(theta.init[p-1])
     S.curr = as.matrix(exp(theta.init[p]))
     GHs = NULL
     if (trace) {
       cat('\n')
-      cat(paste('Initial D =', round(D.curr, 2), 'a =', round(a.curr, 2), 'S =', round(S.curr, 3)))
+      cat(paste('Initial D =', round(D.curr, 2), 'S =', round(S.curr, 3)))
       cat('\n')
       cat('Beginning optimization with Nelder-Mead:'); cat('\n')
     }
     
     while (stop == F) {
       GH.up = try( GHpoints.pt.1re(y = y, id = id, X = X, Z = Z, 
-                                   beta = beta.curr, D = D.curr, a = a.curr, Sigma = S.curr, 
+                                   beta = beta.curr, D = D.curr, a = 0, Sigma = S.curr, 
                                    offset = offset, RE.size = 1, GHk = npoints, tol = 1e-323),
                    silent = T)
       
@@ -232,12 +217,10 @@ ptmixed = function(fixef.formula, id, offset = NULL,
           else {
             theta.curr = mle$par
             p = length(theta.curr)
-            beta.curr = theta.curr[1:(p-3)]
-            D.curr = 1+exp(theta.curr[p-2])
-            a.curr = 1-exp(theta.curr[p-1])
+            beta.curr = theta.curr[1:(p-2)]
+            D.curr = 1+exp(theta.curr[p-1])
             S.curr = as.matrix(exp(theta.curr[p]))
-            if (trace) print(paste('D =', round(D.curr, 2), 
-                                   'a =', round(a.curr, 2), 'S =', round(S.curr, 2)))
+            if (trace) print(paste('D =', round(D.curr, 2), 'S =', round(S.curr, 2)))
           }
         }
       }
@@ -286,27 +269,24 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   # collect results:
   if (include.ranef) {
     mle.est = mle$par
-    ncov = length(mle.est) - 3
-    mle.est[ncov + 1] = 1 + exp(mle.est[ncov + 1])
-    mle.est[ncov + 2] = 1 - exp(mle.est[ncov + 2])
-    mle.est[ncov + 3] = exp(mle.est[ncov + 3])
+    ncov = length(mle.est) - 2
+    mle.est[ncov + 1] = 1 + exp(mle$par[ncov + 1])
+    mle.est[ncov + 2] = 0
+    mle.est[ncov + 3] = exp(mle$par[ncov + 2])
     logl = - mle$value
   }
   if (!include.ranef) {
     mle.est = mle$mle
-    ncov = length(mle.est) - 2
-    mle.est[ncov + 1] = 1 + exp(mle.est[ncov + 1])
-    mle.est[ncov + 2] = 1 - exp(mle.est[ncov + 2])
     mle.est = c(mle.est, 0)
     logl = mle$logl
   }
+  ncov = length(mle.est)-3
   names(mle.est)[1:3 + ncov] = c('D', 'a', 'sigma2')
   # starting value:
   if (include.ranef) {
     # transform back initial starting value
     q = length(theta.init)
-    theta.init[q-2] = 1+exp(theta.init[q-2])
-    theta.init[q-1] = 1-exp(theta.init[q-1])
+    theta.init[q-1] = 1+exp(theta.init[q-2])
     theta.init[q] = exp(theta.init[q])
   }
   if (!include.ranef) {
