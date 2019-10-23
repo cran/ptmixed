@@ -10,22 +10,35 @@ get.initial.theta = function(fixef.formula, data, y, id) {
     a.init = 0.5
   }
   # start with Poisson glmm:
-  poi.glmm = try(
-    GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
-                 data = data, family = poisson(), nAGQ=21,
-                 initial_values = list(betas = poisson()),
-                 control = list(iter_EM = 100, iter_qN = 100)),
-             silent = T)
-  # try NB glmm
-  nb.glmm = try(
-    GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
-                data = data, family = GLMMadaptive::negative.binomial(), 
-                n_phis = 1, nAGQ=21,
-                initial_values = list("betas" = poi.glmm$coefficients,
-                                      "D" = poi.glmm$D),
-                control = list(iter_EM = 100, iter_qN = 100)),
-            silent = T)
-  
+  requireNamespace('lme4')
+  full.formula = update.formula(fixef.formula, '~ . + (1|id)')
+  poi.lme4 = try(lme4::glmer(full.formula, data = data, family = 'poisson',
+                             nAGQ = 21), silent = T)
+  if (!inherits(poi.lme4, 'try-error')) {
+    nb.glmm = try(
+      GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
+                                data = data, family = GLMMadaptive::negative.binomial(), 
+                                n_phis = 1, nAGQ=21,
+                                initial_values = list("betas" = lme4::fixef(poi.lme4)),
+                                control = list(iter_EM = 100, iter_qN = 100)),
+      silent = T)
+  }
+  if (inherits(poi.lme4, 'try-error')) {
+    poi.glmm = try(
+      GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
+                                data = data, family = poisson(), nAGQ=21,
+                                initial_values = list(betas = poisson()),
+                                control = list(iter_EM = 100, iter_qN = 100)),
+      silent = T)
+    nb.glmm = try(
+      GLMMadaptive::mixed_model(fixed = fixef.formula, random = ~ 1 | id, 
+                                data = data, family = GLMMadaptive::negative.binomial(), 
+                                n_phis = 1, nAGQ=21,
+                                initial_values = list("betas" = poi.glmm$coefficients),
+                                control = list(iter_EM = 100, iter_qN = 100)),
+      silent = T)
+  }
+
   if (inherits(nb.glmm, 'try-error')) {
     if (nb.glmm == "Error in mixed_fit(y, X, Z, X_zi, Z_zi, id, offset, offset_zi, family,  : \n  A value greater than 22000 has been detected for the shape/size\n parameter of the negative binomial distribution. This typically\n indicates that the Poisson model would be better. Otherwise,\n adjust the 'max_phis_value' control argument.\n") {
       warning(warn1)
@@ -35,8 +48,8 @@ get.initial.theta = function(fixef.formula, data, y, id) {
   
   # initial beta and variance:
   from.poi = from.nb = F
-  if (!inherits(poi.glmm, 'try-error')) {
-    if (poi.glmm$converged) from.poi = T
+  if (!inherits(poi.lme4, 'try-error')) {
+    if (poi.lme4@optinfo$conv$opt == 0) from.poi = T
   }
   if (!inherits(nb.glmm, 'try-error')) {
     if (nb.glmm$converged) from.nb = T
@@ -47,24 +60,19 @@ get.initial.theta = function(fixef.formula, data, y, id) {
   }
   if (!from.nb) {
     if (from.poi) {
-      beta.init = poi.glmm$coefficients
-      S.init = as.numeric(poi.glmm$D)
-    }
-    else if (!from.poi){ # try lme4 Poisson GLMM or Poisson GLM
-      requireNamespace('lme4')
-      full.formula = update.formula(fixef.formula, '~ . + (1|id)')
-      poi.lme4 = try(lme4::glmer(full.formula, data = data, family = 'poisson',
-                       nAGQ = 21), silent = T)
-      from.lme4 = F
-      if (!inherits(poi.lme4, 'try-error')) {
+      if (!inherits(poi.lme4, 'try-error')) { #lme4
         beta.init = lme4::fixef(poi.lme4)
         S.init = as.data.frame(lme4::VarCorr(poi.lme4))[1,'sdcor'] ^2
       }
-      if (inherits(poi.lme4, 'try-error')) {
+      else if (!inherits(poi.glmm, 'try-error')) { #GLMMadaptive
+        beta.init = poi.glmm$coefficients
+        S.init = as.numeric(poi.glmm$D)
+        }
+      else { # try Poisson GLM
         poi.glm = glm(fixef.formula, family = poisson, data = data)
         beta.init = coef(poi.glm)
         S.init = 0.2
-      }
+      }  
     }
   }
   # dispersion:
@@ -77,6 +85,9 @@ get.initial.theta = function(fixef.formula, data, y, id) {
     warning.list = c(warning.list, 'Data may be underdispersed')
     D.init = 1.5
   }
+  # check on extreme values of D, s2 (from v 0.3.2)
+  if (D.init > 20) D.init = 20
+  if (S.init > 9) S.init = 5
   # transformation of D, a, S:
   D.trasf.init = log(D.init-1)
   a.trasf.init = log(1-a.init)

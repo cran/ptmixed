@@ -1,4 +1,4 @@
-#' #' Poisson-Tweedie generalized linear model
+#' Poisson-Tweedie generalized linear model
 #'
 #' Estimates a Poisson-Tweedie generalized linear model.
 #'
@@ -66,8 +66,8 @@ ptglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
     theta.start = c(beta.init, D.init, a.init)
   }
   p = length(theta.start)
-  theta.init = c(theta.start[1:(p-2)], log(theta.start[p-1]) - 1,
-                 1 - log(theta.start[p]))
+  theta.init = c(theta.start[1:(p-2)], log(theta.start[p-1] - 1),
+                 log(1 - theta.start[p]))
   # define negative loglik
   nlogl = function(theta, y, X, offset) {
     requireNamespace('tweeDEseq')
@@ -102,9 +102,13 @@ ptglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
   }
   
   # optimization
-  mle = try( optim(theta.init, nlogl, method = "BFGS", 
-                   y = y, X = X, offset = offset,
-                   control = list(trace = 1, REPORT = 1, maxit = maxit[1])) )
+  if (maxit[1] > 0) {
+    mle = try( optim(theta.init, nlogl, method = "BFGS", 
+                     y = y, X = X, offset = offset,
+                     control = list(trace = 1, REPORT = 1, maxit = maxit[1])) )
+  }
+  else if (maxit[1] == 0) cat('Skipping BFGS optimization\n')
+
   do.nm = F
   temp1 = exists('mle')
   if (!temp1) do.nm = T
@@ -117,7 +121,7 @@ ptglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
     }
   }
   if (do.nm) {
-    if (trace) cat('Optimization with BFGS failed. Trying with Nelder-Mead...')
+    if (trace & maxit[1] !=0) cat('Optimization with BFGS failed. Trying with Nelder-Mead...')
     mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", 
                      y = y, X = X, offset = offset,
                      control = list(trace = 1, REPORT = 1, maxit = maxit[2]) ))

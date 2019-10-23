@@ -1,13 +1,16 @@
-#' Compute random effects for Poisson-Tweedie mixed model
+#' Compute random effects for Poisson-Tweedie and negative binomial mixed model
 #'
-#' Compute the empirical Bayes estimates of the random effects for 
-#' the Poisson-Tweedie generalized linear mixed model
+#' Compute the empirical Bayes estimates of the random effects  
+#' for the Poisson-Tweedie and negative binomial generalized 
+#' linear mixed models (fitted through \code{ptmixed} and 
+#' \code{nbmixed} respectively)
 #' 
-#' @param obj an object of class \code{ptglmm} (obtained from \code{ptmixed}).
+#' @param obj an object of class \code{ptglmm} (obtained from 
+#' \code{ptmixed} or \code{nbmixed} ).
 #' @return A vector with the EB estimates of the random effects
 #' @export
 #' @author Mirko Signorelli
-#' @seealso \code{\link{ptmixed}}
+#' @seealso \code{\link{ptmixed}}, \code{\link{nbmixed}}
 #' @examples
 #' \donttest{
 #' # generate data
@@ -24,13 +27,13 @@
 #' mu = exp(X %*% beta + rand.int + offset)
 #' y = rep(NA, n*t)
 #' library(tweeDEseq)
-#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
+#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = 0, max = 1000)
 #' 
 #' data.long = data.frame(y, group, time, id, offset)
 #' rm(list = setdiff(ls(), 'data.long'))
 #' 
 #' # estimate the model
-#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
+#' fit1 = nbmixed(fixef.formula = y ~ group + time, id = data.long$id,
 #'               offset = data.long$offset, data = data.long, npoints = 5, 
 #'               freq.updates = 200, hessian = FALSE, trace = TRUE)
 #'               

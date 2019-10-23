@@ -2,12 +2,13 @@
 % Please edit documentation in R/summary-ptglmm.R
 \name{summary.ptglmm}
 \alias{summary.ptglmm}
-\title{Summarizing Poisson-Tweedie mixed model estimation results}
+\title{Summarizing Poisson-Tweedie and negative binomial mixed model estimation results}
 \usage{
 \method{summary}{ptglmm}(object, wald = T, ...)
 }
 \arguments{
-\item{object}{an object of class \code{ptglmm} (obtained from \code{ptmixed}).}
+\item{object}{an object of class \code{ptglmm} (obtained 
+from \code{ptmixed} or \code{nbmixed}).}
 
 \item{wald}{logical. If \code{TRUE}, standard errors and univariate Wald test are computed. Default is \code{TRUE}.}
 
@@ -20,10 +21,12 @@ and maximum likelihood estimates of the other parameters (\code{D}, \code{a} and
 }
 \description{
 Provides parameter estimates, standard errors and univariate Wald test
-for the Poisson-Tweedie generalized linear mixed model
+for the Poisson-Tweedie and negative binomial generalized
+linear mixed models (fitted through \code{ptmixed} and 
+\code{nbmixed} respectively)
 }
 \seealso{
-\code{\link{ptmixed}} and the examples therein
+\code{\link{ptmixed}}, \code{\link{nbmixed}} and the examples therein
 }
 \author{
 Mirko Signorelli

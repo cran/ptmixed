@@ -1,9 +1,12 @@
-#' Summarizing Poisson-Tweedie mixed model estimation results
+#' Summarizing Poisson-Tweedie and negative binomial mixed model estimation results
 #' 
 #' Provides parameter estimates, standard errors and univariate Wald test
-#' for the Poisson-Tweedie generalized linear mixed model
+#' for the Poisson-Tweedie and negative binomial generalized
+#' linear mixed models (fitted through \code{ptmixed} and 
+#' \code{nbmixed} respectively)
 #' 
-#' @param object an object of class \code{ptglmm} (obtained from \code{ptmixed}).
+#' @param object an object of class \code{ptglmm} (obtained 
+#' from \code{ptmixed} or \code{nbmixed}).
 #' @param wald logical. If \code{TRUE}, standard errors and univariate Wald test are computed. Default is \code{TRUE}.
 #' @param ... Further arguments passed to or from other methods.
 #' @return A list with the following elements: value of the loglikelihood at the MLE (\code{logl}),
@@ -11,7 +14,7 @@
 #' and maximum likelihood estimates of the other parameters (\code{D}, \code{a} and \code{sigma2})
 #' @export
 #' @author Mirko Signorelli
-#' @seealso \code{\link{ptmixed}} and the examples therein
+#' @seealso \code{\link{ptmixed}}, \code{\link{nbmixed}} and the examples therein
  
 summary.ptglmm = function(object, wald = T, ...) {
   if (wald) {
@@ -26,23 +29,25 @@ summary.ptglmm = function(object, wald = T, ...) {
   if (wald == T) {
     requireNamespace('matrixcalc')
     check.pdef1 = matrixcalc::is.positive.definite(object$fisher.info, tol = 1e-10)
-    if (check.pdef1) {
+    last.eig = tail(eigen(object$fisher.info)$values, 1)
+    if (check.pdef1 & last.eig > 0.01) {
       inv.hess = solve(object$fisher.info)
       se.beta = sqrt(diag(inv.hess)[1:ncov])
     }
     else {
       red.hess = object$fisher.info[1:ncov, 1:ncov]
       check.pdef2 = matrixcalc::is.positive.definite(red.hess, tol = 1e-10)
-      if (check.pdef2) {
+      last.eig.red = tail(eigen(red.hess)$values, 1)
+      if (check.pdef2 & last.eig.red > 0.01) {
         warning('Full Fisher information matrix not positive definite. Standard errors are estimated
                 using the hessian of the profile likelihood of beta | (D, a, sigma2)')
         inv.hess = solve(red.hess)
-        se.beta = sqrt(diag(red.hess))
+        se.beta = sqrt(diag(inv.hess))
       }
-      if (!check.pdef2) stop('Fisher information matrix is not positive definite. Standard errors cannot be computed.')
+      else stop('Fisher information matrix is not positive definite. Standard errors cannot be computed.')
     }
     z.score = beta/se.beta
-    p = (1-pnorm(abs(z.score)))
+    p = 2*pnorm(abs(z.score), lower.tail = F)
     coef.table = cbind(beta, se.beta, z.score, p)
     colnames(coef.table) = c('Estimate', 'Std. error', 'z', 'p.value')
   }

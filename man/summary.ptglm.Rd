@@ -2,12 +2,13 @@
 % Please edit documentation in R/summary-ptglm.R
 \name{summary.ptglm}
 \alias{summary.ptglm}
-\title{Summarizing Poisson-Tweedie GLM estimation results}
+\title{Summarizing Poisson-Tweedie and negative binomial GLM estimation results}
 \usage{
 \method{summary}{ptglm}(object, ...)
 }
 \arguments{
-\item{object}{an object of class \code{ptglm} (obtained from \code{ptglm}).}
+\item{object}{an object of class \code{ptglm} 
+(obtained from \code{ptglm} or \code{nbglm}).}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -17,10 +18,11 @@ A list with the following elements: \code{logl}, \code{coefficients},
 }
 \description{
 Provides parameter estimates, standard errors and univariate Wald test
-for the Poisson-Tweedie generalized linear model
+for the Poisson-Tweedie and the negative binomial generalized linear models
+(fitted through \code{ptglm} and \code{nbglm} respectively)
 }
 \seealso{
-\code{\link{ptglm}} and the examples therein
+\code{\link{ptglm}}, \code{\link{nbglm}} and the examples therein
 }
 \author{
 Mirko Signorelli

@@ -37,7 +37,7 @@
 #' @importFrom utils tail
 #' @export
 #' @author Mirko Signorelli
-#' @seealso \code{\link{summary.ptglmm}}
+#' @seealso \code{\link{summary.ptglmm}}, \code{\link{ranef}}
 #' @examples
 #' # generate data
 #' set.seed(123)
@@ -89,7 +89,7 @@ nbmixed = function(fixef.formula, id, offset = NULL,
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
   t = dim(data)[1] / length(unique(id))
   if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
-                       the unbalanced case is not yet implemented (check back soon!)')
+                       the unbalanced case is not implemented yet')
   if (npoints == 1) stop('Use at least 2 quadrature points')
   if (npoints %%1 !=0) stop('npoints should be a natural number > 1')
   if (!is.null(maxit)) {

@@ -1,4 +1,4 @@
-#' #' Poisson-Tweedie generalized linear model
+#' Negative binomial generalized linear model
 #'
 #' Estimates a negative binomial generalized linear model.
 #'
@@ -96,9 +96,13 @@ nbglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
   }
   
   # optimization
-  mle = try( optim(theta.init, nlogl, method = "BFGS", 
+  if (maxit[1] > 0) {
+    mle = try( optim(theta.init, nlogl, method = "BFGS", 
                    y = y, X = X, offset = offset,
                    control = list(trace = 1, REPORT = 1, maxit = maxit[1])) )
+  }
+  else if (maxit[1] == 0) cat('Skipping BFGS optimization\n')
+  
   do.nm = F
   temp1 = exists('mle')
   if (!temp1) do.nm = T
@@ -111,7 +115,7 @@ nbglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
     }
   }
   if (do.nm) {
-    if (trace) cat('Optimization with BFGS failed. Trying with Nelder-Mead...')
+    if (trace & maxit[1] !=0) cat('Optimization with BFGS failed. Trying with Nelder-Mead...')
     mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", 
                      y = y, X = X, offset = offset,
                      control = list(trace = 1, REPORT = 1, maxit = maxit[2]) ))
@@ -139,9 +143,9 @@ nbglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
   
   # collect results:
   mle.est = mle$par
-  ncov = length(mle.est) - 2
+  ncov = length(mle.est) - 1
   mle.est[ncov + 1] = 1 + exp(mle.est[ncov + 1])
-  mle.est[ncov + 2] = 0
+  mle.est = c(mle.est, 0)
   names(mle.est)[1:2 + ncov] = c('D', 'a')
   logl = - mle$value
   out = list('call' = call, 'mle' = mle.est, 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ptglm.R
 \name{ptglm}
 \alias{ptglm}
-\title{#' Poisson-Tweedie generalized linear model}
+\title{Poisson-Tweedie generalized linear model}
 \usage{
 ptglm(formula, offset = NULL, data, maxit = c(500, 1e+05), trace = T,
   theta.start = NULL)

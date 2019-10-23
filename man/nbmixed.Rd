@@ -99,7 +99,7 @@ results$coefficients
 }
 }
 \seealso{
-\code{\link{summary.ptglmm}}
+\code{\link{summary.ptglmm}}, \code{\link{ranef}}
 }
 \author{
 Mirko Signorelli

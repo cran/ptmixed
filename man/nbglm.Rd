@@ -2,7 +2,7 @@
 % Please edit documentation in R/nbglm.R
 \name{nbglm}
 \alias{nbglm}
-\title{#' Poisson-Tweedie generalized linear model}
+\title{Negative binomial generalized linear model}
 \usage{
 nbglm(formula, offset = NULL, data, maxit = c(500, 1e+05), trace = T,
   theta.start = NULL)
