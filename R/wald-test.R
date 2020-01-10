@@ -44,8 +44,8 @@ wald.test <- function (obj, L, k = NULL) {
   requireNamespace('aod')
   requireNamespace('matrixcalc')
   mle = obj$mle
-  if (class(obj)[1] == 'ptglmm') p = length(mle) - 3
-  else if (class(obj)[1] == 'ptglm') p = length(mle) - 2
+  if (inherits(obj, 'ptglmm')) p = length(mle) - 3
+  else if (inherits(obj, 'ptglm')) p = length(mle) - 2
   else stop('obj should be of class ptglmm or ptglm')
   beta.hat = mle[1:p]
   if (ncol(L) != p) stop('L is not conformable with b')

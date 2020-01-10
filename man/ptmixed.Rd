@@ -36,7 +36,7 @@ the Nelder-Mead method and, if this fails, by the BFGS method}
 
 \item{freq.updates}{Number of iterations after which the quadrature points are updated when the Nelder-Mead
 algorithm is used for the optimization. Default value is 200. To update the quadrature points at every iteration 
-(note that this typically makes the computation 2.5x slower), set \code{freq.updates = 1} 
+(note that this may make the computation about 10x slower), set \code{freq.updates = 1} 
 or \code{freq.updates = NA}. The function first tries to optimize the loglikelihood using the Nelder-Mead
 algorithm, updating the quadrature points every \code{freq.updates} iterations. If this fails to converge,
 a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.}

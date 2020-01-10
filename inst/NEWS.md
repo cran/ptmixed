@@ -2,7 +2,7 @@ Introduction
 ============
 
 The aim of this document is to keep track of the changes made to the
-different versions of the `R` package ptmixed.
+different versions of the `R` package `ptmixed`.
 
 The numbering of package versions follows the convention a.b.c, where a
 and b are non-negative integers and c is a positive integer. When minor
@@ -15,8 +15,17 @@ package - in other words, within a section you will find all those
 package versions a.b.x where a and b are fixed whereas x = 1, 2, 3, …
 Each subsection corresponds to a specific package version.
 
-0.4.1
+0.4.x
 =====
+
+ptmixed 0.4.2
+-------------
+
+-   Released: January 2020
+-   Changed class check within `wald.test` to prevent problems with
+    future `R` release (4.0.0)
+-   Fixed bug that occurred when `freq.updates = 1` was set in
+    `ptmixed()` and `nbmixed()`
 
 ptmixed 0.4.1
 -------------
@@ -80,8 +89,8 @@ ptmixed 0.1.2
     Nelder-Mead and BFGS. Starting from this version, when Nelder-Mead
     is called it is possible to update the positioning of the quadrature
     points every *n* iterations by setting the `freq.updates` argument
-    equal to *n*. Default is set to `freq.updates = 200` (on average,
-    this makes the optimization 2.5 times faster than when
+    equal to *n*. Default is set to `freq.updates = 200` (this typically
+    makes the optimization about 10 times faster than when
     `freq.updates = 1`)
 
 0.0.x

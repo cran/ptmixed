@@ -21,7 +21,7 @@
 #' the Nelder-Mead method and, if this fails, by the BFGS method
 #' @param freq.updates Number of iterations after which the quadrature points are updated when the Nelder-Mead
 #' algorithm is used for the optimization. Default value is 200. To update the quadrature points at every iteration 
-#' (note that this typically makes the computation 2.5x slower), set \code{freq.updates = 1} 
+#' (note that this may make the computation about 10x slower), set \code{freq.updates = 1} 
 #' or \code{freq.updates = NA}. The function first tries to optimize the loglikelihood using the Nelder-Mead
 #' algorithm, updating the quadrature points every \code{freq.updates} iterations. If this fails to converge,
 #' a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.
@@ -165,8 +165,8 @@ nbmixed = function(fixef.formula, id, offset = NULL,
     
     redo = redo2 = F
     # optimization: try Nelder-Mead
-    stop = F
-    niter = 0
+    ##stop = F
+    ##niter = 0
     # starting values
     p = length(theta.init)
     theta.curr = theta.init
@@ -181,53 +181,84 @@ nbmixed = function(fixef.formula, id, offset = NULL,
       cat('Beginning optimization with Nelder-Mead:'); cat('\n')
     }
     
-    while (stop == F) {
-      GH.up = try( GHpoints.pt.1re(y = y, id = id, X = X, Z = Z, 
+    # optimization updating quadrature points in NM
+    # every k iterations
+    if (!is.na(freq.updates)) {
+      stop = F
+      niter = 0
+      while (stop == F) {
+        GH.up = try( GHpoints.pt.1re(y = y, id = id, X = X, Z = Z, 
                                    beta = beta.curr, D = D.curr, a = 0, Sigma = S.curr, 
                                    offset = offset, RE.size = 1, GHk = npoints, tol = 1e-323),
-                   silent = T)
+                    silent = T)
       
-      if (exists('GH.up')) {
-        if (!inherits(GH.up, 'try-error')) GHs = GH.up
-        else warning('Quadrature points not updated')
-      }
-      mle = try( optim(theta.curr, nlogl, method = "Nelder-Mead", offset = offset,
+        if (exists('GH.up')) {
+          if (!inherits(GH.up, 'try-error')) GHs = GH.up
+          else warning('Quadrature points not updated')
+        }
+        mle = try( optim(theta.curr, nlogl, method = "Nelder-Mead", offset = offset,
                        y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
                        GHs = GHs, control = optim.control.nm) )
-      # check convergence
-      temp1 = exists('mle')
-      if (!temp1) { # proceed with BFGS
-        stop = T
-        redo = T
-      }
-      else if (temp1) {
-        temp2 = inherits(mle, 'try-error')
-        if (temp2) { # proceed with BFGS
+        # check convergence
+        temp1 = exists('mle')
+        if (!temp1) { # proceed with BFGS
           stop = T
           redo = T
         }
-        else if (!temp2) { # check if convergence reached
-          niter = niter + mle$counts[1]
-          temp3 = (mle$convergence == 0)
-          if (temp3) stop = T
-          else if (niter > maxit[1]) {
+        else if (temp1) {
+          temp2 = inherits(mle, 'try-error')
+          if (temp2) { # proceed with BFGS
             stop = T
             redo = T
           }
-          else {
+          else if (!temp2) { # check if convergence reached
+            niter = niter + mle$counts[1]
+            temp3 = (mle$convergence == 0)
+            if (temp3) stop = T
+            else if (niter > maxit[1]) {
+              stop = T
+              redo = T
+            }
+            else {
+              theta.curr = mle$par
+              p = length(theta.curr)
+              beta.curr = theta.curr[1:(p-2)]
+              D.curr = 1+exp(theta.curr[p-1])
+              S.curr = as.matrix(exp(theta.curr[p]))
+              if (trace) print(paste('D =', round(D.curr, 2), 'S =', round(S.curr, 2)))
+            }
+          }
+        }
+      }
+      cat('\n')
+      cat(paste('Total number of iterations =', niter))
+      cat('\n')
+    }
+    
+    # optimization updating quadrature points at every
+    # iteration
+    if (is.na(freq.updates)) {
+      mle = try( optim(theta.curr, nlogl, method = "Nelder-Mead", offset = offset,
+                       y = y, X = X, Z = Z, id = id, GHk = npoints, hessian = F,
+                       GHs = NULL, control = optim.control.nm) )
+      # check convergence
+      redo = T
+      temp1 = exists('mle')
+      if (temp1) {
+        temp2 = inherits(mle, 'try-error')
+        if (!temp2) {
+          temp3 = (mle$convergence == 0)
+          if (temp3) {
+            redo = F
             theta.curr = mle$par
             p = length(theta.curr)
             beta.curr = theta.curr[1:(p-2)]
             D.curr = 1+exp(theta.curr[p-1])
             S.curr = as.matrix(exp(theta.curr[p]))
-            if (trace) print(paste('D =', round(D.curr, 2), 'S =', round(S.curr, 2)))
           }
         }
       }
     }
-    cat('\n')
-    cat(paste('Total number of iterations =', niter))
-    cat('\n')
     
     # if it failed: try BFGS
     if (redo) {
