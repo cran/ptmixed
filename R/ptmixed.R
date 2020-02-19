@@ -3,13 +3,16 @@
 #' Estimates the Poisson-Tweedie generalized linear mixed model with random intercept.
 #' Likelihood approximation for the model is based on the adaptive Gauss-Hermite quadrature rule.
 #' 
-#' @param fixef.formula A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}
+#' @param fixef.formula A formula for the fixed effects part of the model. 
+#' It should be in the form \code{y ~ x1 + x2}
 #' @param id A variable to distinguish observations from the same subject.
 #' @param offset An offset to be added to the linear predictor. Default is \code{NULL}.
 #' @param data A data frame containing the variables declared in \code{fixef.formula}.
-#' @param npoints Number of quadrature points employed in the adaptive quadrature. Default is 10.
-#' @param hessian Logical value. If \code{TRUE}, the hessian matrix is evaluated at the MLE to derive the observed Fisher information matrix. Default is \code{TRUE}.
-#' @param trace Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.
+#' @param npoints Number of quadrature points employed in the adaptive quadrature. Default is 5.
+#' @param hessian Logical value. If \code{TRUE}, the hessian matrix is evaluated 
+#' at the MLE to derive the observed Fisher information matrix. Default is \code{TRUE}.
+#' @param trace Logical value. If \code{TRUE}, additional information 
+#' is printed during the optimization. Default is \code{TRUE}.
 #' @param theta.start Numeric vector comprising initial parameter values for the
 #' vector of regression coefficients, the dispersion parameter, the power parameter 
 #' and the variance of the random intercept (to be specified exactlyin this order!). 
@@ -38,38 +41,26 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{summary.ptglmm}}, \code{\link{ranef}}
 #' @examples
-#' # generate data
-#' set.seed(123)
-#' n = 6; t = 3
-#' id = rep(1:n, each = t)
-#' rand.int = rep(rnorm(n, sd = 0.7), each = t)
-#' group = rep(c(0,1), each = n*t/2)
-#' time = rep(0:(t-1), n)
-#' offset = rnorm(n*t, sd = 0.3)
+#' data(df1, package = 'ptmixed')
+#' head(df1)
 #' 
-#' beta = c(3, 0.3, 0.1)
-#' X = model.matrix(~group + time)
-#' mu = exp(X %*% beta + rand.int + offset)
-#' y = rep(NA, n*t)
-#' library(tweeDEseq)
-#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = -0.5, max = 1000)
-#' 
-#' data.long = data.frame(y, group, time, id, offset)
-#' rm(list = setdiff(ls(), 'data.long'))
-#' 
-#' # 1) Quick example (5 quadrature points, hessian and SEs not computed)
+#' # 1) Quick example (just 1 quadrature point, hessian and SEs 
+#' # not computed - NB: we recommend to increase the number of
+#' # quadrature points to obtain much more accurate estimates,
+#' # as shown in example 2 below where we use 5 quadrature points)
 #' # estimate the model
-#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
-#'               offset = data.long$offset, data = data.long, npoints = 5, 
+#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = df1$id,
+#'               offset = df1$offset, data = df1, npoints = 1, 
 #'               freq.updates = 200, hessian = FALSE, trace = TRUE)
 #' # print summary:
 #' summary(fit1, wald = FALSE)
 #' 
 #' \donttest{
-#' # 2) Full computation, including hessian evaluation and using more quadrature points
-#' # estimate the model
-#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = data.long$id,
-#'               offset = data.long$offset, data = data.long, npoints = 10, 
+#' # 2) Full computation that uses more quadrature points
+#' # for the likelihood approximation and includes numeric
+#' # evaluation of the hessian matrix
+#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = df1$id,
+#'               offset = df1$offset, data = df1, npoints = 5, 
 #'               freq.updates = 200, hessian = TRUE, trace = TRUE)
 #' # print and get summary:
 #' results = summary(fit2, wald = TRUE)
@@ -79,7 +70,7 @@
 #' }
 
 ptmixed = function(fixef.formula, id, offset = NULL,
-                   data, npoints = 10, hessian = T, trace = T,
+                   data, npoints = 5, hessian = T, trace = T,
                    theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100),
                    freq.updates = 200, min.var.init = 1e-3) {
   call = match.call()
@@ -89,7 +80,6 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   t = dim(data)[1] / length(unique(id))
   if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
                        the unbalanced case is not implemented yet')
-  if (npoints == 1) stop('Use at least 2 quadrature points')
   if (npoints %%1 !=0) stop('npoints should be a natural number > 1')
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)

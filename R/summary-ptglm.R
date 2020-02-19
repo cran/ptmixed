@@ -6,14 +6,18 @@
 #' 
 #' @param object an object of class \code{ptglm} 
 #' (obtained from \code{ptglm} or \code{nbglm}).
+#' #' @param silent logical. If \code{TRUE}, information on parameter estimates and
+#' tests is not printed on screen. Default is \code{FALSE} (info is printed)
 #' @param ... Further arguments passed to or from other methods.
+#' @param silent logical. If \code{TRUE}, information on parameter estimates and
+#' tests is not printed on screen. Default is \code{FALSE} (info is printed)
 #' @return A list with the following elements: \code{logl}, \code{coefficients}, 
 #' \code{D}, \code{a}
 #' @export
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptglm}}, \code{\link{nbglm}} and the examples therein
  
-summary.ptglm = function(object, ...) {
+summary.ptglm = function(object, silent = F, ...) {
   ncov = length(object$mle) - 2
   beta = object$mle[1:ncov]
   D = object$mle[ncov+1]
@@ -44,12 +48,14 @@ summary.ptglm = function(object, ...) {
   p = 2*pnorm(abs(z.score), lower.tail = F)
   coef.table = cbind(beta, se.beta, z.score, p)
   colnames(coef.table) = c('Estimate', 'Std. error', 'z', 'p.value')
-  cat(paste('Loglikelihood:', round(object$logl, 3), '\n'))
-  cat('Parameter estimates:\n')
-  print(coef.table)
-  cat('\n')
-  cat(paste('Dispersion =', round(D,2), '\n'))
-  cat(paste('Power =', round(a,2), '\n'))
+  if (!silent) {
+    cat(paste('Loglikelihood:', round(object$logl, 3), '\n'))
+    cat('Parameter estimates:\n')
+    print(round(coef.table, 4))
+    cat('\n')
+    cat(paste('Dispersion =', round(D,2), '\n'))
+    cat(paste('Power =', round(a,2), '\n'))
+  }
   out = list('logl' = round(object$logl,2), 'coefficients' = coef.table,
              'D'= D, 'a' = a)
 }

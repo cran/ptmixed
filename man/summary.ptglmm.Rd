@@ -4,13 +4,16 @@
 \alias{summary.ptglmm}
 \title{Summarizing Poisson-Tweedie and negative binomial mixed model estimation results}
 \usage{
-\method{summary}{ptglmm}(object, wald = T, ...)
+\method{summary}{ptglmm}(object, wald = T, silent = F, ...)
 }
 \arguments{
 \item{object}{an object of class \code{ptglmm} (obtained 
 from \code{ptmixed} or \code{nbmixed}).}
 
 \item{wald}{logical. If \code{TRUE}, standard errors and univariate Wald test are computed. Default is \code{TRUE}.}
+
+\item{silent}{logical. If \code{TRUE}, information on parameter estimates and
+tests is not printed on screen. Default is \code{FALSE} (info is printed)}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

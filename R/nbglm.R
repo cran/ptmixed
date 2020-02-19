@@ -97,9 +97,11 @@ nbglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
   
   # optimization
   if (maxit[1] > 0) {
+    ctrl = list(maxit = maxit[1])
+    if (trace) ctrl = list(trace = 1, REPORT = 1, maxit = maxit[1])
     mle = try( optim(theta.init, nlogl, method = "BFGS", 
                    y = y, X = X, offset = offset,
-                   control = list(trace = 1, REPORT = 1, maxit = maxit[1])) )
+                   control = ctrl) )
   }
   else if (maxit[1] == 0) cat('Skipping BFGS optimization\n')
   
@@ -116,9 +118,11 @@ nbglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
   }
   if (do.nm) {
     if (trace & maxit[1] !=0) cat('Optimization with BFGS failed. Trying with Nelder-Mead...')
+    ctrl = list(maxit = maxit[2])
+    if (trace) ctrl = list(trace = 1, REPORT = 1, maxit = maxit[2])
     mle = try( optim(theta.init, nlogl, method = "Nelder-Mead", 
                      y = y, X = X, offset = offset,
-                     control = list(trace = 1, REPORT = 1, maxit = maxit[2]) ))
+                     control = ctrl) )
   }
   converged = F
   temp1 = exists('mle')

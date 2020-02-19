@@ -8,7 +8,7 @@
 #' @param id A variable to distinguish observations from the same subject.
 #' @param offset An offset to be added to the linear predictor. Default is \code{NULL}.
 #' @param data A data frame containing the variables declared in \code{fixef.formula}.
-#' @param npoints Number of quadrature points employed in the adaptive quadrature. Default is 10.
+#' @param npoints Number of quadrature points employed in the adaptive quadrature. Default is 5.
 #' @param hessian Logical value. If \code{TRUE}, the hessian matrix is evaluated at the MLE to derive the observed Fisher information matrix. Default is \code{TRUE}.
 #' @param trace Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.
 #' @param theta.start Numeric vector comprising initial parameter values for the
@@ -80,7 +80,7 @@
 #' }
 
 nbmixed = function(fixef.formula, id, offset = NULL,
-                   data, npoints = 10, hessian = T, trace = T,
+                   data, npoints = 5, hessian = T, trace = T,
                    theta.start = NULL, reltol = 1e-8, maxit = c(1e4, 100),
                    freq.updates = 200, min.var.init = 1e-3) {
   call = match.call()
@@ -90,7 +90,6 @@ nbmixed = function(fixef.formula, id, offset = NULL,
   t = dim(data)[1] / length(unique(id))
   if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
                        the unbalanced case is not implemented yet')
-  if (npoints == 1) stop('Use at least 2 quadrature points')
   if (npoints %%1 !=0) stop('npoints should be a natural number > 1')
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)

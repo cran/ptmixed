@@ -18,11 +18,32 @@ Each subsection corresponds to a specific package version.
 0.4.x
 =====
 
+ptmixed 0.4.3
+-------------
+
+-   Released: February 2020
+-   Added the possibility to use Laplace approximation, which is a
+    special case of the adaptive Gauss Hermite quadrature method where
+    just 1 quadrature point is used (simply set `npoints = 1` in
+    `ptmixed()` or `nbmixed()`). Note: use of the Laplace is not
+    recommended, because it is less accurate than the adaptive GH,
+    results in lower convergence rates and can yield biased parameter
+    estimates! We recommend using a sufficient number of quadrature
+    points (5 typically produces a good likelihood approximation)
+-   Added `make.spaghetti()` function to create a spaghetti plot /
+    trajectory plot to visualize longitudinal data
+-   Added example dataset `df1`
+-   Added `silent` argument to `summary.ptglmm()`. Furthermore, printed
+    output table with parameter estimates and Wald test is now presented
+    with at most 4 decimals
+-   Fixed bug that caused `ptglm()` and `nbglm()`to print detailed
+    optimization info also when `trace = T`
+
 ptmixed 0.4.2
 -------------
 
 -   Released: January 2020
--   Changed class check within `wald.test` to prevent problems with
+-   Changed class check within `wald.test()` to prevent problems with
     future `R` release (4.0.0)
 -   Fixed bug that occurred when `freq.updates = 1` was set in
     `ptmixed()` and `nbmixed()`
@@ -39,7 +60,7 @@ ptmixed 0.4.1
     to make it possible to skip BFGS optimization and go straight to
     Nelder-Mead
 -   Help files revised and improved
--   Added extra checks in `summary.ptglmm` and `summary.ptglm` (to
+-   Added extra checks in `summary.ptglmm()` and `summary.ptglm()` (to
     verify that the smallest eigenvalue is not too small)
 
 0.3.x
@@ -49,7 +70,7 @@ ptmixed 0.3.1
 -------------
 
 -   Released: September 2019
--   Added `glmpt()` function for the estimation of a Poisson-Tweedie GLM
+-   Added `ptglm()` function for the estimation of a Poisson-Tweedie GLM
 -   Added `nbmixed()` and `nbglm()` functions for the estimation of
     negative binomial GLMM and GLM using the Poisson-Tweedie
     parametrization (negative binomial: a = 0)

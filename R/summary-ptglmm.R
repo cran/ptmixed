@@ -8,6 +8,8 @@
 #' @param object an object of class \code{ptglmm} (obtained 
 #' from \code{ptmixed} or \code{nbmixed}).
 #' @param wald logical. If \code{TRUE}, standard errors and univariate Wald test are computed. Default is \code{TRUE}.
+#' @param silent logical. If \code{TRUE}, information on parameter estimates and
+#' tests is not printed on screen. Default is \code{FALSE} (info is printed)
 #' @param ... Further arguments passed to or from other methods.
 #' @return A list with the following elements: value of the loglikelihood at the MLE (\code{logl}),
 #' table with maximum likelihood estimates of the regression coefficients, SEs and Wald tests \code{coefficients}, 
@@ -16,7 +18,7 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptmixed}}, \code{\link{nbmixed}} and the examples therein
  
-summary.ptglmm = function(object, wald = T, ...) {
+summary.ptglmm = function(object, wald = T, silent = F,...) {
   if (wald) {
     if ('fisher.info' %in% ls(object) == F) stop('Observed Fisher information matrix not available in object. 
   It is needed to return standard errors and Wald test. Set hessian = T in ptmixed() to obtain it.')
@@ -51,13 +53,15 @@ summary.ptglmm = function(object, wald = T, ...) {
     coef.table = cbind(beta, se.beta, z.score, p)
     colnames(coef.table) = c('Estimate', 'Std. error', 'z', 'p.value')
   }
-  cat(paste('Loglikelihood:', round(object$logl, 3), '\n'))
-  cat('Parameter estimates:\n')
-  print(coef.table)
-  cat('\n')
-  cat(paste('Dispersion =', round(D,2), '\n'))
-  cat(paste('Power =', round(a,2), '\n'))
-  cat(paste('Variance =', round(sigma2,2), '\n'))
+  if (!silent) {
+    cat(paste('Loglikelihood:', round(object$logl, 3), '\n'))
+    cat('Parameter estimates:\n')
+    print(round(coef.table, 4))
+    cat('\n')
+    cat(paste('Dispersion =', round(D,2), '\n'))
+    cat(paste('Power =', round(a,2), '\n'))
+    cat(paste('Variance =', round(sigma2,2), '\n'))
+  }
   out = list('logl' = round(object$logl,2), 'coefficients' = coef.table,
              'D'= D, 'a' = a, 'sigma2' = sigma2)
 }

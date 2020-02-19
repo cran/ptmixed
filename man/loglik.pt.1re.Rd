@@ -4,7 +4,7 @@
 \alias{loglik.pt.1re}
 \title{Loglikelihood of Poisson-Tweedie generalized linear mixed model with random intercept}
 \usage{
-loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 10,
+loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 5,
   tol = 9.88131291682493e-324, GHs = NULL)
 }
 \arguments{
@@ -26,7 +26,7 @@ loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 10,
 
 \item{offset}{Offset term to be added to the linear predictor}
 
-\item{GHk}{Number of quadrature points (default is 10)}
+\item{GHk}{Number of quadrature points (default is 5)}
 
 \item{tol}{Tolerance value for the evaluation of the probability mass function of the Poisson-Tweedie distribution}
 

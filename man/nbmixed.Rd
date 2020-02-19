@@ -4,7 +4,7 @@
 \alias{nbmixed}
 \title{Negative binomial generalized linear mixed model}
 \usage{
-nbmixed(fixef.formula, id, offset = NULL, data, npoints = 10,
+nbmixed(fixef.formula, id, offset = NULL, data, npoints = 5,
   hessian = T, trace = T, theta.start = NULL, reltol = 1e-08,
   maxit = c(10000, 100), freq.updates = 200, min.var.init = 0.001)
 }
@@ -17,7 +17,7 @@ nbmixed(fixef.formula, id, offset = NULL, data, npoints = 10,
 
 \item{data}{A data frame containing the variables declared in \code{fixef.formula}.}
 
-\item{npoints}{Number of quadrature points employed in the adaptive quadrature. Default is 10.}
+\item{npoints}{Number of quadrature points employed in the adaptive quadrature. Default is 5.}
 
 \item{hessian}{Logical value. If \code{TRUE}, the hessian matrix is evaluated at the MLE to derive the observed Fisher information matrix. Default is \code{TRUE}.}
 
