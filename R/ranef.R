@@ -1,7 +1,7 @@
 #' Compute random effects for Poisson-Tweedie and negative binomial mixed model
 #'
-#' Compute the empirical Bayes estimates of the random effects  
-#' for the Poisson-Tweedie and negative binomial generalized 
+#' Compute the BLUP (best linear unbiased predictor) of the random  
+#' effects for the Poisson-Tweedie and negative binomial generalized 
 #' linear mixed models (fitted through \code{ptmixed} and 
 #' \code{nbmixed} respectively)
 #' 
@@ -13,32 +13,17 @@
 #' @seealso \code{\link{ptmixed}}, \code{\link{nbmixed}}
 #' @examples
 #' \donttest{
-#' # generate data
-#' set.seed(123)
-#' n = 6; t = 3
-#' id = rep(1:n, each = t)
-#' rand.int = rep(rnorm(n, sd = 0.7), each = t)
-#' group = rep(c(0,1), each = n*t/2)
-#' time = rep(0:(t-1), n)
-#' offset = rnorm(n*t, sd = 0.3)
 #' 
-#' beta = c(3, 0.3, 0.1)
-#' X = model.matrix(~group + time)
-#' mu = exp(X %*% beta + rand.int + offset)
-#' y = rep(NA, n*t)
-#' library(tweeDEseq)
-#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = 0, max = 1000)
+#' data(df1, package = 'ptmixed')
 #' 
-#' data.long = data.frame(y, group, time, id, offset)
-#' rm(list = setdiff(ls(), 'data.long'))
-#' 
-#' # estimate the model
-#' fit1 = nbmixed(fixef.formula = y ~ group + time, id = data.long$id,
-#'               offset = data.long$offset, data = data.long, npoints = 5, 
+#' # estimate a Poisson-Tweedie or negative binomial GLMM (using
+#' # ptmixed() or nbmixed())
+#' fit0 = nbmixed(fixef.formula = y ~ group + time, id = id,
+#'               offset = offset, data = df1, npoints = 5, 
 #'               freq.updates = 200, hessian = FALSE, trace = TRUE)
 #'               
 #' # obtain random effect estimates
-#' ranef(obj = fit1)
+#' ranef(obj = fit0)
 #' }
 
 ranef <- function (obj) {
@@ -51,9 +36,16 @@ ranef <- function (obj) {
   y = df[, all.vars(fixef.formula[[2]])]
   X = model.matrix(as.formula(fixef.formula[-2]), data = df)
   Z = as.matrix(model.matrix(~1, data = df))
-  id = eval(temp$id)
+  id = temp$id
+  id = df[ , deparse(substitute(id))]
+  #id = eval(temp$id)
   id = as.numeric(as.factor(id))
-  offset = eval(temp$offset)
+  #offset = eval(temp$offset)
+  offset = NULL
+  if ('offset' %in% as.list(obj$call)) {
+    offset = temp$offset
+    offset = df[ , deparse(substitute(offset))]
+  }
   # get beta, D, a, Sigma
   mle = obj$mle
   p = length(mle) - 3

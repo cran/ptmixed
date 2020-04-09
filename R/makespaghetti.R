@@ -13,15 +13,16 @@
 #' @param col a vector of colors (optional)
 #' @param lty line type
 #' @param lwd line width
-#' @param main title for the plot
-#' @param xlab title for the x axis
-#' @param ylab title for the y axis
+#' @param title plot title
+#' @param xlab label for the x axis
+#' @param ylab label for the y axis
 #' @param pch dot type
 #' @param legend.title legend title
 #' @param cex.axis font size for the axes
-#' @param cex.main title font size
+#' @param cex.title title font size
 #' @param cex.lab font size for axis labels
 #' @param cex.leg font size for the legend
+#' @param legend.inset moves legend more to the left / right
 #' @import graphics
 #' @export
 #' @author Mirko Signorelli
@@ -45,16 +46,17 @@
 #' 
 #' # create plot
 #' make.spaghetti(x = time, y, id, group, 
-#' data = data.long, main = 'spaghetti plot')
+#' data = data.long, title = 'spaghetti plot')
 #' }
 
 make.spaghetti = function(x, y, id, group = NULL, data,
                       col = NULL, pch = 16,
                       lty = 1, lwd = 1,
-                      main = '', xlab = NA, ylab = NA,
+                      title = '', xlab = NA, ylab = NA,
                       legend.title = '',
-                      cex.axis = 1, cex.main = 1, 
-                      cex.lab = 1, cex.leg = 1) {
+                      cex.axis = 1, cex.title = 1, 
+                      cex.lab = 1, cex.leg = 1,
+                      legend.inset = -0.3) {
   if (is.na(xlab)) xlab = deparse(substitute(x))
   if (is.na(ylab)) ylab = deparse(substitute(y))
   x = data[ , deparse(substitute(x))]
@@ -77,13 +79,14 @@ make.spaghetti = function(x, y, id, group = NULL, data,
       # this palette is a reordered version of brewer.pal(12, 'Paired') from RColorBrewer
       palette = palette[1:nlevs]
     }
+    if (!is.null(col)) palette = col
     group = as.factor(group)
     group.names = levels(group)
     col = group
     levels(col) = palette
     col = as.character(col)
   }
-  plot(y ~ x, col = col, pch = pch, main = main, xlab = xlab,
+  plot(y ~ x, col = col, pch = pch, main = title, xlab = xlab,
        ylab = ylab, cex.axis = cex.axis, cex.lab = cex.axis)
   data.long = data.frame(x, y, id, col, stringsAsFactors = F)
   seg.list = names(which(table(data.long$id) >= 2))
@@ -99,7 +102,7 @@ make.spaghetti = function(x, y, id, group = NULL, data,
   # add legend if multiple groups are present
   if (!is.null(group)) {
     par(xpd = T)
-    legend(x = "right", inset=c(-0.3, 0), levels(group), 
+    legend(x = "right", inset=c(legend.inset, 0), levels(group), 
            title = legend.title, pch = pch,
            col = palette, bty = 'n', cex = cex.leg)
   }

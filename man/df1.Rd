@@ -4,13 +4,19 @@
 \name{df1}
 \alias{df1}
 \title{Example dataset with longitudinal counts}
-\format{A data frame with 18 rows and 5 variables}
+\format{
+A data frame with 18 rows and 5 variables
+}
 \usage{
 data(df1)
 }
 \description{
 An example dataset of a study with longitudinal counts, used
-to illustrate how `ptmixed()` works.
+to illustrate how `ptmixed()` and `nbmixed()` work.
+}
+\seealso{
+examples in the \code{\link{nbmixed}} and 
+\code{\link{ptmixed}} help pages
 }
 \author{
 Mirko Signorelli

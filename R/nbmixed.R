@@ -39,43 +39,33 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{summary.ptglmm}}, \code{\link{ranef}}
 #' @examples
-#' # generate data
-#' set.seed(123)
-#' n = 6; t = 3
-#' id = rep(1:n, each = t)
-#' rand.int = rep(rnorm(n, sd = 0.7), each = t)
-#' group = rep(c(0,1), each = n*t/2)
-#' time = rep(0:(t-1), n)
-#' offset = rnorm(n*t, sd = 0.3)
+#' data(df1, package = 'ptmixed')
+#' head(df1)
 #' 
-#' beta = c(3, 0.3, 0.1)
-#' X = model.matrix(~group + time)
-#' mu = exp(X %*% beta + rand.int + offset)
-#' y = rep(NA, n*t)
-#' library(tweeDEseq)
-#' for (i in 1:(n*t)) y[i] = rPT(1, mu = mu[i], D = 2, a = 0, max = 1000)
+#' # 1) Quick example (hessian and SEs not computed)
 #' 
-#' data.long = data.frame(y, group, time, id, offset)
-#' rm(list = setdiff(ls(), 'data.long'))
-#' 
-#' # 1) Quick example (5 quadrature points, hessian and SEs not computed)
 #' # estimate the model
-#' fit1 = nbmixed(fixef.formula = y ~ group + time, id = data.long$id,
-#'               offset = data.long$offset, data = data.long, npoints = 5, 
+#' fit1 = nbmixed(fixef.formula = y ~ group + time, id = id,
+#'               offset = offset, data = df1, npoints = 5, 
 #'               freq.updates = 200, hessian = FALSE, trace = TRUE)
+#'               
 #' # print summary:
 #' summary(fit1, wald = FALSE)
 #' 
 #' \donttest{
-#' # 2) Full computation, including hessian evaluation and using more quadrature points
+#' # 2) Full computation, including computation of SEs
+#' 
 #' # estimate the model
-#' fit2 = nbmixed(fixef.formula = y ~ group + time, id = data.long$id,
-#'               offset = data.long$offset, data = data.long, npoints = 10, 
+#' fit2 = nbmixed(fixef.formula = y ~ group + time, id = id,
+#'               offset = offset, data = df1, npoints = 5, 
 #'               freq.updates = 200, hessian = TRUE, trace = TRUE)
-#' # print and get summary:
-#' results = summary(fit2, wald = TRUE)
+#'               
+#' # print summary:
+#' summary(fit2)
+#' 
+#' # extract summary:
+#' results = summary(fit2)
 #' ls(results)
-#' # view table with estimates of regression coefficients, standard errors and Wald test:
 #' results$coefficients
 #' }
 
@@ -85,6 +75,16 @@ nbmixed = function(fixef.formula, id, offset = NULL,
                    freq.updates = 200, min.var.init = 1e-3) {
   call = match.call()
   warning.list = list()
+  # identify elements
+  y = data[, all.vars(fixef.formula[[2]])]
+  X = model.matrix(fixef.formula[-2], data = data)
+  Z = as.matrix(model.matrix(~1, data = data))
+  # fix id an offset:
+  id = data[ , deparse(substitute(id))]
+  id = as.numeric(as.factor(id))
+  check0 = missing(offset)
+  if (check0) offset = NULL
+  if (!check0) offset = data[ , deparse(substitute(offset))]
   # preliminary checks:
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
   t = dim(data)[1] / length(unique(id))
@@ -94,12 +94,6 @@ nbmixed = function(fixef.formula, id, offset = NULL,
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)
   }
-  # identify elements
-  y = data[, all.vars(fixef.formula[[2]])]
-  X = model.matrix(fixef.formula[-2], data = data)
-  Z = as.matrix(model.matrix(~1, data = data))
-  # fix id:
-  id = as.numeric(as.factor(id))
   # NB: updates at every iteration coded as NA (but it can also be provided = 1)
   if (freq.updates == 1) freq.updates = NA
   # optim control values:

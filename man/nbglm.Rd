@@ -4,8 +4,14 @@
 \alias{nbglm}
 \title{Negative binomial generalized linear model}
 \usage{
-nbglm(formula, offset = NULL, data, maxit = c(500, 1e+05), trace = T,
-  theta.start = NULL)
+nbglm(
+  formula,
+  offset = NULL,
+  data,
+  maxit = c(500, 1e+05),
+  trace = T,
+  theta.start = NULL
+)
 }
 \arguments{
 \item{formula}{A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}}
@@ -37,21 +43,12 @@ Maximum likelihood estimation of a negative binomial GLM
 (the NB distribution is obtained as special case of the Poisson-Tweedie distribution when a = 0).
 }
 \examples{
-# generate data
-set.seed(1234)
-n = 50
-group = rep(c(0,1), each = n/2)
-age = rpois(n, lambda = 5)
-beta = c(3, 0.3, 0.2, 0.1)
-X = model.matrix(~group + age + age*group)
-mu = exp(X \%*\% beta)
-y = rep(NA, n) 
-library(tweeDEseq)
-for (i in 1:n) y[i] = rPT(1, mu = mu[i], D = 2, a = 0, max = 1000)
-dataset = data.frame(y, group, age)
-rm(list = setdiff(ls(), 'dataset'))
+data(df1, package = 'ptmixed')
+
 # estimate the model
-fit1 = nbglm(formula = y ~ group + age + age*group, data = dataset)
+fit1 = nbglm(formula = y ~ group*time, data = df1)
+
+# view model summary
 summary(fit1)
 }
 \seealso{

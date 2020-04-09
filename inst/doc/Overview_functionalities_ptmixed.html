@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Mirko Signorelli" />
+
+
+<title>An introduction to the R package ptmixed</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">An introduction to the R package ptmixed</h1>
+<h4 class="author">Mirko Signorelli</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#whats-ptmixed">What’s ptmixed?</a></li>
+<li><a href="#get-started">Get started</a></li>
+</ul></li>
+<li><a href="#an-overview-of-the-package-functionalities">An overview of the package functionalities</a></li>
+<li><a href="#a-step-by-step-example">A step by step example</a><ul>
+<li><a href="#data-preparation">Data preparation</a></li>
+<li><a href="#data-visualization">Data visualization</a></li>
+<li><a href="#the-poisson-tweedie-generalized-linear-mixed-model">The Poisson-Tweedie generalized linear mixed model</a><ul>
+<li><a href="#model-estimation">Model Estimation</a></li>
+<li><a href="#viewing-parameter-estimates-standard-errors-and-p-values">Viewing parameter estimates, standard errors and p-values</a></li>
+<li><a href="#testing-more-complex-hypotheses">Testing more complex hypotheses</a></li>
+<li><a href="#computing-the-predicted-random-effects">Computing the predicted random effects</a></li>
+</ul></li>
+<li><a href="#simpler-models">Simpler models</a><ul>
+<li><a href="#negative-binomial-generalized-linear-mixed-model">Negative binomial generalized linear mixed model</a></li>
+<li><a href="#poisson-tweedie-generalized-linear-model">Poisson-Tweedie generalized linear model</a></li>
+<li><a href="#negative-binomial-generalized-linear-model">Negative binomial generalized linear model</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#further-details-and-material">Further details and material</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<div id="whats-ptmixed" class="section level2">
+<h2>What’s ptmixed?</h2>
+<p><code>ptmixed</code> is an <code>R</code> package that has been created to estimate the Poisson-Tweedie mixed effects model proposed by Signorelli, Spitali and Tsonaka (2020, in review). The Poisson-Tweedie mixed effects model is a generalized linear mixed model (GLMM) for count data that encompasses the negative binomial and Poisson GLMMs as special cases. It is particularly suitable for the analysis of overdispersed count data, because it allows to model overdispersion, zero-inflation and heavy-tails more flexibly than the negative binomial GLMM.</p>
+<p>The package comprises not only functions for the estimation of the Poisson-Tweedie mixed model, but also functions for the estimation of the negative binomial and Poisson-Tweedie GLMs and of the negative binomial GLMM, alongside with some (simple) data visualization functions.</p>
+</div>
+<div id="get-started" class="section level2">
+<h2>Get started</h2>
+<p>The package can be installed directly from CRAN using</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">install.packages</span>(<span class="st">&#39;ptmixed&#39;</span>)</a></code></pre></div>
+<p>After installing the package, you can load its functionalities through</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(<span class="st">&#39;ptmixed&#39;</span>)</a></code></pre></div>
+</div>
+</div>
+<div id="an-overview-of-the-package-functionalities" class="section level1">
+<h1>An overview of the package functionalities</h1>
+<p>The package comprises different types of functions:</p>
+<ul>
+<li>functions for the estimation of the Poisson-Tweedie and negative binomial GLMMs: see <code>?ptmixed</code> and <code>?nbmixed</code></li>
+<li>functions for the estimation of the Poisson-Tweedie and negative binomial GLMs: see <code>?ptglm</code> and <code>?nbglm</code></li>
+<li>functions to summarize model fits: see <code>?summary.ptglmm</code> and <code>?summary.ptglm</code></li>
+<li>a function that allows to carry out univariate and multivariate Wald tests: see <code>?wald.test</code></li>
+<li>a function to compute the predicted random effects for a fitted Poisson-Tweedie or negative binomial GLMM: see <code>?ranef</code></li>
+<li>functions for data visualization: see <code>?pmf</code> and <code>?make.spaghetti</code></li>
+</ul>
+</div>
+<div id="a-step-by-step-example" class="section level1">
+<h1>A step by step example</h1>
+<p>In this section I am going to present a step by step example whose aim is to show how the <code>R</code> package <code>ptmixed</code> can be used to estimate the Poisson-Tweedie GLMM, as well as a few simpler models.</p>
+<div id="data-preparation" class="section level2">
+<h2>Data preparation</h2>
+<p>All functions in the package assume that data are in the so-called ‘’long format’’. Let’s generate an example dataset (already in long format) using the function <code>simulate_ptglmm</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">example.df =<span class="st"> </span><span class="kw">simulate_ptglmm</span>(<span class="dt">n =</span> <span class="dv">14</span>, <span class="dt">t =</span> <span class="dv">4</span>, <span class="dt">seed =</span> <span class="dv">1234</span>,</a>
+<a class="sourceLine" id="cb3-2" title="2">                             <span class="dt">beta =</span> <span class="kw">c</span>(<span class="fl">2.3</span>, <span class="fl">-0.9</span>, <span class="fl">-0.2</span>, <span class="fl">0.5</span>),</a>
+<a class="sourceLine" id="cb3-3" title="3">                             <span class="dt">D =</span> <span class="fl">1.5</span>, <span class="dt">a =</span> <span class="dv">-1</span>,</a>
+<a class="sourceLine" id="cb3-4" title="4">                             <span class="dt">sigma2 =</span> <span class="fl">0.7</span>)</a></code></pre></div>
+<pre><code>## Loading required namespace: tweeDEseq</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">data.long =<span class="st"> </span>example.df<span class="op">$</span>data</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">head</span>(data.long)</a></code></pre></div>
+<pre><code>##    y id group time
+## 1  6  1     0    0
+## 2  0  1     0    1
+## 3  2  1     0    2
+## 4  1  1     0    3
+## 5 10  2     0    0
+## 6 10  2     0    1</code></pre>
+<p>In this example I have generated a dataset of 14 subjects with 4 repeated measurements each. <code>y</code> is the response variable, <code>id</code> denotes the subject identicator, <code>group</code> is a dummy variable and <code>time</code> is the time at which a measurement was taken.</p>
+</div>
+<div id="data-visualization" class="section level2">
+<h2>Data visualization</h2>
+<p>Before fitting a model, it is often useful to make a few plots to get a feeling of the data that you would like to model. Below I use two simple plots to visualize the distribution of the response variable and its relationship with the available covariates.</p>
+<p>We can view the marginal distribution of the response variable <code>y</code> using the function <code>pmf</code>, and visualize the individual trajectories of subjects over time using the function <code>make.spaghetti</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">pmf</span>(data.long<span class="op">$</span>y, <span class="dt">xlab =</span> <span class="st">&#39;y&#39;</span>, <span class="dt">title =</span> <span class="st">&#39;Distribution of y&#39;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">make.spaghetti</span>(<span class="dt">x =</span> time, <span class="dt">y =</span> y, <span class="dt">id =</span> id,</a>
+<a class="sourceLine" id="cb8-2" title="2">  <span class="dt">group =</span> group, <span class="dt">data =</span> data.long,</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="dt">title =</span> <span class="st">&#39;Trajectory (&quot;spaghetti&quot;) plot&#39;</span>,</a>
+<a class="sourceLine" id="cb8-4" title="4">  <span class="dt">legend.title =</span> <span class="st">&#39;GROUP&#39;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAAFQCAMAAABQwF3SAAAAw1BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYfeLQzoCw6AAA6ADo6AGY6OgA6Ojo6OmY6OpA6ZpA6ZrY6kLY6kNtmAABmOgBmOjpmZgBmkLZmkNtmtrZmtttmtv+QOgCQZgCQZjqQkGaQkLaQtpCQttuQtv+Q29uQ2/+2ZgC2Zjq2ZpC2kDq2kGa227a229u22/+2/9u2///bkDrbkGbbtmbbtpDb27bb29vb2//b/7bb////tmb/25D/27b//7b//9v////Cv7qcAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAXhklEQVR4nO2daWPrtpWGjzP3jiWnmbSpna5209XqzDS3VdPO1PK1+f9/VYmVAAmAAIiDhcL7wdYCvjjCI6wkIRi6di0oHUAXrqB0AF24gtIBdOEKSgfQhSsoHUAXrqB0AF24gtIBdOEKSgfQhSsoHUAXrqB0AF24gtIBdOEKSgfQhStA8DyB1K3h7fcn+PhiO/b9v//mmcvbw83z2wPcj9l94XuM0Blunu25k780SGn/emfMwvBJ/OPPJEDw3AD487fesM4qgcAILYBZ7vSvDnh8dm9Iv/wkAfFnEiB4rgB2H+pbQLTMOQF7g2CRBTDLfYphsj8b81gCjviyIQuQfMfPzuCOZfn7b+GLT8M/vh2Bf/0si+X9zwA337Dy+eErgP/4Nf9qkCL6x8/GF37xIo+/uWN2F4BHlsGFMBqtHnnh/320uPnJp4EW8l/Gwz+Qx1OuLMMPzxTBaPon+ky8TgNhuf+c/v0rCXKyf70T+ar2ArCMVsZfjwDJVwFM9PHlwqo0ozIWy1g7iD6Q0uBV/l4WEDuIlh4//n9YuU015Mxq2+h3ITnxI1gNlFkNU64kW/LoK8WfJp8CWQCe7GldZlLsOeAp2isF/PHT8H/j8/+kFeGeF8uJ1Gr6nFD46cvnB1IyDOD4Mm0WyZv8eFaFxnK+nfkzkTdehh/oEWMpj9Y/kP5ByZXkcvvyfhJfoNH0zJPLQJQmet76Tv2Abs9qt4z2Kpto2bj983+/ksXCq8R5onr+yfezXpC3pvR45je10BNqqrGQP3zPH59YIlHWPFf+/O1hMqUxLAOxABbkFHv5VZXRXiVgNp55/04Mu2ixjERES6eWpVa49FBxPCcgUrIqp2YHotfmhUwPnOU6yG8NMaVfEiUQF+BpWKbYv/OOeor2egETAh9+988HUdQXUAHLykgLSNROWl9FyZI2WukJZ4DH+Qlz+6MkQI5WchWmc8BKIEGAuT1ti6ZorxcwA/L2oNTgxympRw0mhsrsZg54RPzbr8RIR1axea6DsQaLQHoNDtAcMOs9p0GW2oeyUrl8/QdzH8xL9kxGwLLQl4BJpr9h7bjsJJVcZ32wBLwMZBVw74MHYw3++PL5aeoNT3Dz62EcOo8PRwzfkIogG2R9FM1LlnaWEupskEUH4qSdZnMVMcxVcp2NoiVgNRD28lmZAUlpgyz7KNq2BlpOgORr6oO14Q6fftI3T3LZ62KYB/MiIw5T9ZhNk4Y/TxNeMVFl9VBa6/PgCbASCMv9Ms2DJ2nTJMVenweL+CsSIPkaR9Ef/nCWDdvw+buxStKlJ76S9cuBrzZ94mtDv1SPZ1VwymC+eEgs4Gu+kvXX77j1lCvz/vGneR+sBsJyp3+/1wEri9GKvbaSRaMV8dcjyJ/lvPL5apoEs2e2xtDdD0asXA+kf5C51dfNOgX5s/z8EAV47GDVkqXrxEZZCIxN6ze0J4/J/DIb6LcjyJ7jSR0reYv2lNphZxspCwEx4Y0aBZ2mvDtgt8hY55vww0bANz+dvWIpaBuBzz+7EyecQqWe8N8xYDEmbeoDXrvAP+lZNFOXiCa2q5DAO+X7k8R6jhmIdhUReKd8e5Cj1ktvpJsReKfsNbhJgX/S83Q5VO+DmxEEpOWrtlFLQV2FBNWadSURpPCQSmDWlVYQesDFsdgXbNaFLghIewK4f/3xizphijfryiPwT3riV4Lbp0kBZl2ZBN4pab19/ZJeYGVZ6PA3q0KHw6F0CPgC75RvD2T2+/7/w15q8OFwDYTBP+l5uunOstARYFZeh8NVEIaAtGc2fL7YLqXogCsUVGuGrQ64sBm6roLvFQM+0FH07glDtWbIOsz+71VQrRmuDoZHuxRUa4arg/HhDgXVmqHqYH2yN0G1Zpg6OJ/uSlCtGaIWQHdMGKo1w5MB534JQ7VmaDLC3C1hqNYMSxaUeyUM1ZohyQpyp4ShWjMcOTDukzBUa4YiJ8RdEoZqzVDkZrhHwlCtGYbWCO6QMFRrhqB1fvsjDNWapZcPvd0RBu+U7FI7505f/mYl5Mdub4TBOyUFTC+YbfPOBl9yOyMM3ikJYI62xeuivbldNeDXOwq4wTsbArDtizB4p2y6BgdB2xVh8E7J7u+/HVq8syEQ2Z4IQ0hist3cs2OLjiCznAoltiPCUK1ZQoXz2g9hSOFR+RYOMbR2QxgC0pKdzdkgq6lRdByrvRAG/6Tk5sK3BzLKagpwLKmdEAbvlGynu/cn8gMUDQGO57QPwuCdUixQnj6+NAR4C6VdEAbvlHKvytNtO4C3MdoDYfBPKrCy35baaJZHWwntgDAEpBW7kb4/NQJ4O5/2CUO1ZgmUAE/zhKFas+1KAqd1wlCt2WYlQtM4YajWbKuSgWmbMFRrtlEJsTRNGKo126akUFomDNWabVJiJA0ThmrNtig5kHYJQ7VmG4SAo1nCUK1ZvFBgtEoYqjWLFhKKRglDtWbRwiLRJmGo1ixWeByaJAzVmkUKk0KLhKFaszjhMmiQMFRrFiVsAu0RhmrNYoRf/s0RhmrNIpSj9FsjDNWahStP2TdGGKo1C1aukm+LMASkfX9idyDVuUdHvnJvijD4Jz2L20at948GmKVXxmJviTB4p5QXvtd5h3/WQm+IMHinVPbWqXCPjsxF3g5h8E5ZdQ3OXuDNEAb/pOLGhgr74ALF3QphCEjLtmEBsNTfcoCLFHYjhKFaM38VKuo2CEMKj7J7dJQq6P0BrnOPjnLl3ARh8E9a5x4dJUu5BcLgnbLSPTqKFnIDhME7ZcgeHfl+WrtwEddPGLxTBuzRke/H04sXcPEA1gT+Sb336DgcchGuoHgrCMEpCEjru0dHNsBVFG4VQdgFCGaHQx7ElRRtWBh0OZCsBYqz66zje73jc9D3p1v6wjjUGU4sxe2W6GDLwTYzQRcXciV8wwKhrSBtAjnJC8VKX369u50BpovCbw/WtWEPQfyhDjMFLBrkaviGhMJ/E4FQ5CTpv9cvn8ljstP6EvBwuXmOjw3iD/U3w4BcEd+AYDiy4fyok+St8PnjiwEw/1bECeIPDTNLDLkqvt7hKOfU1RosfyNhrKtN1mChhJArA+wZj/qLU5wk6X3ly2NdNfXBW0ZZsOHYKLM0kGvj6xkRI3miV6aKUfTjYAesjrMjBVsOjjXbDLk+vn4xTW0xAXzLB85rTfQmwWaHSLMtkGvk6xeVQCYA88uflEGWeEz+NQ2YKBJynXy94hIDYgl4OJERFH+Z/TwkXSakD5sHTBQOuVa+JLLVD8PuHjiBnAezZYxpoYOPqU4E8y4AEwVBrpev12k0ulRJ6InOliGXS5V8DZOi3Q1gIl/I1fPNdircT1CTmUfp1FV6M3XAHnKXUF2FN1cH7Cl7KdVVeAvVx7dOwETGoqqs8Jaqjm+9gIlUyORhbYXXgqBaMy7l2oHON0LgnZItmF5KbOGQ6xqgPQq8U7J1NDL1Vk96RZqFqgOOFXinJIA52vw3gHfAsQLvlAQwXxQvsIVD5xsp8E5ZtAbXOAFpQ+Cdkt3fr52fjjcLVwccJwhJPDK+ebZv0dGb6AoF1ZppuqZB1jgT3XIZ5UzA/o11M/7SvQxbOOwY8PxjkYtkN10oqwvEg/PWy/eGvtARo/nnYpdOn7ZcKasJlMebGcNqinDtfKly8c1lM1HbHdjhAu3Z2bEQKXbJcuw3C8ZX47U42bA/xEvA9DYl20pDuGB6eKFXBdFNOIyy3hZsMtssc43dHeEFYNb9puuEgf8n9ZPfCWPFKC4TWzXbKkdzvE/CynMkwG8PPo4XcN/mBpvDWb8ua4+E1aeITXR5M6+B1O4I68IdZBU08x8l73CopQhzmlTMLHQKtGvCWAsdpcyi5re7JnzGWKosYxa/eLFrwkkFpcw2rkx1wp6CEmYplh33PdRKJ8htlm5NuRP2EeQ0S3zCoBP2EOQywzgb1AmvC3KYoZ3q64RXBShm+mm+a9ivMqlef5RqobLpzUh5VsgZoOt4PM5eeXtIthLd9nbCPLcsuaDpeJwTvjju/goXJHMaCgFum/DxOCd8gft0JwtRASukcWG3THgJeEh5Nhi5D1aFCbthwm0CXrvPJDnshodaBr4NAA6QL2yEK3kQ2pIlrJhDdgVYlQP2+hcgLrfgo5wyVccIlQIsdjjOsoWDDtunisdlsCHEhYwdaoQKAT6L2x6y/wL4AVEp42wbsPJ7A5Vu4RAGC4Fw24CVrVdq3cIh8NI92frHh6UpFd+kAu+URWuwL4dQwiHeayJoq+Mb1gfzKrzeByfu2wIsY/PdHDFD2zRgeX+hdZtqYZZ89BJgGZ/vlpiPkm9thAHBDGF8GmC56VrNuKhHqEf2vz7CkMJjtoUD1ozGs/S3fbUiGB8Hxne3gOdmZWvwsPnkQ1jspPoexcPrAIzXB3vfn5YgO7+ER1l9BwF4a95pBd4pQ7ZwwBtFZ+iI9QzdOg4T3+anSXm3cLAr/YTYnpPbhiEVT3yOyC8ISJttC4c1+RRjsjPNVp/jvPpWuRcQhCTOsYWDpzJuBWBhdpR/5H+E0eVmQbVma/JYmkbMi69rKE+GDji1VssyYVHreR0N1Rfl/NR2QbVmXlopzdRzcf7oqPwV1fcgr0tImed2QbVmnsq66RLFx6uv4Ctf1x5UI0AxyzoddBZq8gI/HqmjUn3rg6oKMMyyL+g4EafMiH6skaisvnXTHXAAl1iSdRR0QgKy3vK2una6w34AD45qnO6SHP6fuR7rpzugAq4HcRIS2poka6Wrb58H5D44P2RLkScAMZ0yopkoaxubrVEFKGYK2AK9sfHVbaZT9WX9rvqR6mYMOcwyQzYW+BYIMnre7y4+zdXNgw3KCtlUzhuuqJOm2hKWIctrX8nKCXlZ0JElL08EzpawTFn2teickJd3KEaYCLzDbAXakmMHTJUL8rywoy6YFC4r1Zfn1wELZYI8Rxx08HFaitRPENpzq41v2bNJWSDrRR5Q/HxBkj1mLwRmVoMAxSzgc+aArEbjG5i20OxVfdlRDV9V6W8W2lLhQ1bC8bvsVl1o1i7Pcarp66L9zaLGGthFMwW0Gtk431VD8a6+V3NnQ/RgErl0JsTORDrewbv6HuihHfCKUEtIriha3z/MKqt28bPxAKliJ9GcAgyzrfNBxFISd8BY31qvvipUme6q7g8WZbVpyoBXVCy2xYum0wiy+pqgmiKtjm/QzWdk44aL1z5Z4nNunBViFd2B3ai4PAekZXEgMyU6GXbdvjKr8a0DptuvKPvtmM2UlmrzxB+p8WN89V122MLV1KcO7sGzIaKmm2gCmKNd2WVHH2ukuJoCY/giW1w5RtJr6nHZ++oRWeNMGeVmgXdKApj99ul8n6z5Fg7zz1kn4lmfuqiM1uprD6N9wDE1mChBX2zQJk99qD83U/ZlWESyGuW2uBILvFOyO/xvBzHccpixj5kG8awPno27thTqxHfZl5qq7xrcofE+eKCMyY/b2vZBW4yitU8bgdgyijaVYgxs89SIvGKo0X79cXV80U8XRiOeF+ny6XpbuVLcR/My1fE4X8zyH2xdH+AoxIYiNdHyqa0O2JavgFZ9Q+BaoiwsyGAWhNhcRNb6GFKiOmw7Xw/rwCgLCrKYqZ/aQdheOs6iiylUS7U+KpsSJo6ykCCX2fS5LXuaeHaqllThBWtyO7L5UQzc9qdJm83siFeLTZ8m2UoxsHDNfOPhGi2LC3KaTZ9+caLNll6+qySjL1owB/bJvof6vlcd3+xXVWqIV4vNr8rEjK55Oj03Z1Ze713LVZUu8RJZL7ZVTNLC1JuuQ1ZbfVtugbW6XxdNJXGYCmMqdW8v1fZofs8WhUgS2tqb3+t3NgxTfWHP9NJwFfeqpfLEa6VCHawtEsX0x9ZLPooKcprpwxH2fzqfYytsLxkqr1a1TekVOaxc2cwu5blqwMtiEy+w6xH116Jk7IgNXb7S985nXj5wHddn1ce38B3+fLojz9ptn2MYsjrOSSpvDMq43lCZNQ+fFrg6vmX36JgKVNnWZLuMWRraY2U0MGvQ6RN5bVaKL14xAYZZSIM3iJRpv/rG5nrZHIvXRKqDSnVl2bINAYKZceiiavae7NtSxjJo36HlMGqSrU9d/RhNCBDMnOViKOxBNJQIHZi7Wz3a+lTtqKYxA4KZFbCp3Zwekr8o7fQiW60VXoyKLTQbxQwYZqaiWL5kpJ2uEi+6gWmO447SOVpuDjOgmBn6vFlSWy1Jg9gEYTkcXonSMd9tCDOgmGlNr3HOYrOwIvaeYRoynFVb3yjnDnPYBsz1YQcMM/HBrT2xy4S8bdjFzGuNyNLbmlO5o7RrBlvFXGHFBgQz1/zCqwCWiH1WeU0trCuxI0pvzebNFTbdgGAmP+lhJsNLFlkTWnLWytXjyzBFmeBjT9leF2C1mgwx5wDVrXEENEtXqCXzziAFDTWga6nBhq4oqv1SES/JyZbxYEmwbh8Pw9Kk1Mc3yzRJexbUVymIl/iEhUcLbnMPg+GRT3V8M9+6Mn9nHbXtl02O0wkf9eVI1C4hWOYUBKR9f3L+PLSpBnt+o13VmjfCylvT+M1h6VHd3G81jXUS+Cc9i9tGrfePCrNpjBUekAn1yFMZqlnPENhkgWV5ZQ9UFYF3yvcnidXvDv+tvZGKWiA+bit8leD8wa6wTgLvlMreOoF7dGwWNzyknbTuGesk8E4ZXIO3hDUXguVV4A3sg3kV9u2DUwrB8ir4Bo2i2TYsAJb6i/vzsgiW18C37Jb+XfiCas26kgiqNetKIqjWrCuJIKlZl6KUJRsvKG3rnXJvlpkEpW29U+7NMpOgtK13yr1ZZhKUtvVOuTfLTILStt4p92aZSVDa1jvl3iwzCUrbeqfcm2UmQWlb75R7s8wkKG3rnXJvlpkEpQPowhWUDqALV1A6gC5cQekAunAFpQPowhWUDqALV1A6gC5cQekAunAFpQPowhWUDqALV1A6gC5cQekAunAFpQPowhUkdbsA+YFh0xNXyumnp416/ZG8WdVpqaZ0WdKNCuTtcy5LLaUzyrP3B88tSGl2IT8fLT6b9sSZ8vVLV3G8Pci7kZ2WWkqH5fvT6HAWpFyWekpXlOcxY78Pnl2Q0IvdQXy6XT5xppzfT67rMu0J4rTUUrosX+/IXbBnlsBpqaV0WdLfvH9/8vjg+QUJvbQC0UvHlXI4OwrjAveyZJ2WWkqnJUvNqpjbUk25aikAe1jmFCT0Yo0YL2XtiTPlcPovtVNcaALsstRSrlmOCTyi1FKuWp75F8HDMqcgoRf7rvNvvPbEmfLtgdxRfrKWnSwrp6WWcs1SblKwailTrlheJPx1y6yChF6RgPlL1q98BOBVS3WM5bbUx82Oivn+xHY+2DHg2CaavXT3aEqpJgtoot2W0yYja5bz7UjsUU7d+n6b6NhBFnvJOgvxHGQNS8AWy/NEbcXyPO90XXMlDn/Hg6zIaRIrEY8menUCMvsqWCzlbkGrlmpKl6X23o6nSbELHbQwPAZZq0sIyijabvl6p77sstRTuqI8jd2v3EdsvwsdcsWOTQnPrhU7LeVpnIA4+jaCzcNSS2m3PLP772+eVy1nKV1R8ve8oswrKB1AF66gdABduILSAXThCkoH0IUrKB1AF66gdABduILSAXThCkoH0IUrKB1AF66gdABduILSAXThCkoH0IUrKB1AF66gdABduILSAXThCkoH0IUrKB1AF66gdABduILSAXThCkoH0IUrKB1AF66gdABduILSAXThCkoH0IUrKB1AF66gdABduILSAXThCkoHkESXx+HtwX530zULSgeQQh2uXVA6gBTqgO2C0gEk0OsdwMd/jZBf7371AHBPntO77Fd22rkKQekAUojU4DcKmG5N98Xf6A4KZF8j/R7uaxSUDiCFJsD3g/jzSLefq2czlFKC0gGk0AT4cZB/2C4Krm1xrkJQOoAUMgNmGzA49oa4CkHpAFLIUYOvXlA6gBQyAu5zJyooHUAKkfHUAjDbHfR07fUYSgeQRCcxD1YB03nwtQ+idwK4yyooHUAXrqB0AF24+jenp/AKrQqNbwAAAABJRU5ErkJggg==" /><!-- --></p>
+</div>
+<div id="the-poisson-tweedie-generalized-linear-mixed-model" class="section level2">
+<h2>The Poisson-Tweedie generalized linear mixed model</h2>
+<p>The most important function of the package, <code>ptmixed</code>, is a function that makes it possible to carry out maximum likelihood (ML) estimation of the Poisson-Tweedie GLMM. This function employs the adaptive Gauss-Hermite quadrature (AGHQ) method to evaluate the marginal likelihood of the GLMM, and then maximizes this likelihood using the Nelder-Mead and BFGS methods. Finally, if <code>hessian = T</code> (default value) a numerical evaluation of the hessian matrix (needed to compute the standard errors associated to the parameter estimates) in correspondance of the ML estimate is performed.</p>
+<div id="model-estimation" class="section level3">
+<h3>Model Estimation</h3>
+<p>Estimation of the Poisson-Tweedie GLMM can be carried out using <code>ptmixed</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">pt_glmm =<span class="st"> </span><span class="kw">ptmixed</span>(<span class="dt">fixef.formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">id =</span> id,</a>
+<a class="sourceLine" id="cb9-2" title="2">                     <span class="dt">data =</span> data.long, <span class="dt">npoints =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb9-3" title="3">                     <span class="dt">hessian =</span> T, <span class="dt">trace =</span> F)</a></code></pre></div>
+<pre><code>## Loading required namespace: GLMMadaptive</code></pre>
+<pre><code>## Loading required namespace: moments</code></pre>
+<pre><code>## Loading required namespace: lme4</code></pre>
+<pre><code>## Loading required namespace: mvtnorm</code></pre>
+<pre><code>## 
+## 
+## Total number of NM iterations = 570
+## Convergence reached. Computing hessian...</code></pre>
+<pre><code>## Loading required namespace: numDeriv</code></pre>
+<p>The code above requires to estimate a GLMM</p>
+<ul>
+<li>with <code>y</code> as response, <code>group</code>, <code>time</code> and their interaction as fixed effects (as specified in <code>fixef.formula</code>), and a subject-specific random intercept (<code>id = id</code>)</li>
+<li>using an AGHQ with 3 quadrature points (<code>npoints = 3</code>)</li>
+<li>and to further evaluate the Hessian matrix at the MLE (<code>hessian = T</code>)</li>
+</ul>
+<p>Note that the function comprises several other arguments, detailed in the function’s help page. In particular, there are four remarks that I’d like to make here:</p>
+<ul>
+<li>an offset term, if relevant, can be included through the <code>offset</code> argument</li>
+<li>a higher number of quadrature points can be specified by changing the value of <code>npoints</code> (my recommendation is to use <code>npoints = 5</code>)</li>
+<li>detailed information about the optimization can be printed on screen by specifying <code>trace = T</code> (here I have set <code>trace = F</code> to prevent a long tracing output to be printed in the middle of the vignette)</li>
+<li>ML estimation for this model is not trivial, and optimizations may sometimes fail to converge. If this happens, you may try to use a different number of quadrature points (<code>npoints</code>), to change the default values of the arguments <code>freq.updates</code>, <code>reltol</code>, <code>maxit</code> and <code>min.var.init</code>, or to supply an alternative (sensibly chosen) starting value (<code>theta.start</code>)</li>
+</ul>
+</div>
+<div id="viewing-parameter-estimates-standard-errors-and-p-values" class="section level3">
+<h3>Viewing parameter estimates, standard errors and p-values</h3>
+<p>The results of the fitted model can be viewed using</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">summary</span>(pt_glmm)</a></code></pre></div>
+<pre><code>## Loading required namespace: matrixcalc</code></pre>
+<pre><code>## Loglikelihood: -140.623 
+## Parameter estimates:
+##             Estimate Std. error       z p.value
+## (Intercept)   2.0059     0.2865  7.0010  0.0000
+## group        -1.4523     0.4641 -3.1292  0.0018
+## time         -0.1359     0.0762 -1.7826  0.0746
+## group:time    0.5105     0.1458  3.5019  0.0005
+## 
+## Dispersion = 1.63 
+## Power = -0.23 
+## Variance = 0.41</code></pre>
+<p>that reports the ML estimates of the regression coefficients (column <code>Estimate</code>), the associated standard errors (column <code>Std. error</code>) and univariate Wald tests (columns <code>z</code> and <code>p.value</code>), as well as the ML estimates of the dispersion and power parameters of the Poisson-Tweedie distribution, and the ML estimate of the variance of the random effects.</p>
+</div>
+<div id="testing-more-complex-hypotheses" class="section level3">
+<h3>Testing more complex hypotheses</h3>
+<p>More complex hypotheses can be tested using the multivariate Wald test (or, when possible, the likelihood ratio test).</p>
+<p>For example, one may want to test the null hypothesis that there are no differences between the two groups, that is to say that the regression coefficients of <code>group</code> and <code>group:time</code> are both = 0.</p>
+<p>To test this hypothesis we first need to specify it in the form <span class="math inline">\(L \beta = 0\)</span>, where <span class="math inline">\(L\)</span> is specified as follows:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">L.group =<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb19-2" title="2">L.group[<span class="dv">1</span>, <span class="dv">2</span>] =<span class="st"> </span>L.group[<span class="dv">2</span>, <span class="dv">4</span>] =<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb19-3" title="3">L.group</a></code></pre></div>
+<pre><code>##      [,1] [,2] [,3] [,4]
+## [1,]    0    1    0    0
+## [2,]    0    0    0    1</code></pre>
+<p>Then, we can proceed with computing the multivariate Wald test:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">wald.test</span>(pt_glmm, <span class="dt">L =</span> L.group, <span class="dt">k =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>))</a></code></pre></div>
+<pre><code>## Loading required namespace: aod</code></pre>
+<pre><code>##       chi2 df            P
+## 1 14.22634  2 0.0008143085</code></pre>
+</div>
+<div id="computing-the-predicted-random-effects" class="section level3">
+<h3>Computing the predicted random effects</h3>
+<p>To computate the predicted random effects, simply use</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">ranef</span>(pt_glmm)</a></code></pre></div>
+<pre><code>##           1           2           3           4           5           6 
+## -0.74838728  0.31472249  1.13391844 -1.17000951  0.49289844  0.40439346 
+##           7           8           9          10          11          12 
+## -0.22676683  0.31639414 -0.35419327 -0.02760355  0.17689645 -0.27431201 
+##          13          14 
+## -0.18584234  0.65265844</code></pre>
+</div>
+</div>
+<div id="simpler-models" class="section level2">
+<h2>Simpler models</h2>
+<p>The Poisson-Tweedie GLMM is an extension of three simpler models:</p>
+<ul>
+<li>negative binomial GLMM (this is obtained by fixing the power parameter a = 0)</li>
+<li>Poisson-Tweedie GLM (this is obtained by removing the random effects from the model)</li>
+<li>negative binomial GLM (this is obtained by fixing the power parameter a = 0 and removing the random effects from the model)</li>
+</ul>
+<p>For this reason, the package also offers the possibility to estimate these simpler models, as illustrated below.</p>
+<div id="negative-binomial-generalized-linear-mixed-model" class="section level3">
+<h3>Negative binomial generalized linear mixed model</h3>
+<p>The syntax to estimate the negative binomial GLMM is the same as that used for the Poisson-Tweedie GLMM. Just make sure to replace the function <code>ptmixed</code> with <code>nbmixed</code>:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1">nb_glmm =<span class="st"> </span><span class="kw">nbmixed</span>(<span class="dt">fixef.formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">id =</span> id,</a>
+<a class="sourceLine" id="cb26-2" title="2">                     <span class="dt">data =</span> data.long, <span class="dt">npoints =</span> <span class="dv">3</span>, </a>
+<a class="sourceLine" id="cb26-3" title="3">                     <span class="dt">hessian =</span> T, <span class="dt">trace =</span> F)</a></code></pre></div>
+<pre><code>## 
+## Total number of iterations = 362
+## Convergence reached. Computing hessian...</code></pre>
+<p>To view the model summary and compute the predicted random effects, once again you can use</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">summary</span>(nb_glmm)</a></code></pre></div>
+<pre><code>## Loglikelihood: -140.623 
+## Parameter estimates:
+##             Estimate Std. error       z p.value
+## (Intercept)   1.9855     0.2890  6.8699  0.0000
+## group        -1.4244     0.4645 -3.0666  0.0022
+## time         -0.1338     0.0761 -1.7579  0.0788
+## group:time    0.5057     0.1442  3.5067  0.0005
+## 
+## Dispersion = 1.63 
+## Power = 0 
+## Variance = 0.41</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">ranef</span>(nb_glmm)</a></code></pre></div>
+<pre><code>##           1           2           3           4           5           6 
+## -0.73856990  0.33249113  1.15104776 -1.16599968  0.51121344  0.42102715 
+##           7           8           9          10          11          12 
+## -0.21148564  0.31620528 -0.35946848 -0.02816143  0.17458088 -0.27611762 
+##          13          14 
+## -0.18756259  0.65244576</code></pre>
+</div>
+<div id="poisson-tweedie-generalized-linear-model" class="section level3">
+<h3>Poisson-Tweedie generalized linear model</h3>
+<p>Estimation of the Poisson-Tweedie GLM can be done using the <code>ptglm</code> function:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" title="1">pt_glm =<span class="st"> </span><span class="kw">ptglm</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">data =</span> data.long, <span class="dt">trace =</span> F)</a>
+<a class="sourceLine" id="cb32-2" title="2"><span class="kw">summary</span>(pt_glm)</a></code></pre></div>
+<pre><code>## Loglikelihood: -152.931 
+## Parameter estimates:
+##             Estimate Std. error       z p.value
+## (Intercept)   2.2396     0.2128 10.5265  0.0000
+## group        -1.3792     0.4083 -3.3778  0.0007
+## time         -0.1661     0.1244 -1.3353  0.1818
+## group:time    0.5111     0.2046  2.4984  0.0125
+## 
+## Dispersion = 4.24 
+## Power = -0.16</code></pre>
+</div>
+<div id="negative-binomial-generalized-linear-model" class="section level3">
+<h3>Negative binomial generalized linear model</h3>
+<p>Finally, estimation of the negative binomial GLM can be done using the <code>nbglm</code> function:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" title="1">nb_glm =<span class="st"> </span><span class="kw">nbglm</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">data =</span> data.long, <span class="dt">trace =</span> F)</a>
+<a class="sourceLine" id="cb34-2" title="2"><span class="kw">summary</span>(nb_glm)</a></code></pre></div>
+<pre><code>## Loglikelihood: -152.955 
+## Parameter estimates:
+##             Estimate Std. error       z p.value
+## (Intercept)   2.2401     0.2146 10.4362  0.0000
+## group        -1.3751     0.4070 -3.3788  0.0007
+## time         -0.1701     0.1241 -1.3701  0.1707
+## group:time    0.5170     0.2030  2.5473  0.0109
+## 
+## Dispersion = 4.37 
+## Power = 0</code></pre>
+</div>
+</div>
+</div>
+<div id="further-details-and-material" class="section level1">
+<h1>Further details and material</h1>
+<p>The aim of this vignette is to provide a quick-start introduction to the <code>R</code> package <code>ptmixed</code>. Here I have focused my attention on the fundamental aspects that one needs to use the package.</p>
+<p>Further details, functions and examples can be found in <a href="https://CRAN.R-project.org/package=ptmixed/ptmixed.pdf">the manual of the package</a>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

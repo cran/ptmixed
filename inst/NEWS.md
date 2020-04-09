@@ -15,6 +15,25 @@ package - in other words, within a section you will find all those
 package versions a.b.x where a and b are fixed whereas x = 1, 2, 3, …
 Each subsection corresponds to a specific package version.
 
+0.5.x
+=====
+
+ptmixed 0.5.1
+-------------
+
+-   Released: April 2020
+-   Added vignette to illustrate the functionalities of the package
+-   Simplified syntax of `ptmixed()`, `ptglm()`, `nbmixed()` and
+    `nbglm()` (wrt the `id` and `offset` arguments). `ranef()` function
+    updated accordingly
+-   Added example dataset `df1`, used in the `ptmixed()` and `nbmixed()`
+    help pages. Examples in help pages revised
+-   Added `simulate_ptglmm()` function, to be used for illustration
+    purposes (in the vignettes)
+-   Added `pmf()` function to visualize the pmf of a discrete variable
+-   `make.spaghetti()`: fixed minor bug in that arose when the `col`
+    argument was specified + added `legend.inset` argument
+
 0.4.x
 =====
 

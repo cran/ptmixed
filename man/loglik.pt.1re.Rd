@@ -4,8 +4,20 @@
 \alias{loglik.pt.1re}
 \title{Loglikelihood of Poisson-Tweedie generalized linear mixed model with random intercept}
 \usage{
-loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 5,
-  tol = 9.88131291682493e-324, GHs = NULL)
+loglik.pt.1re(
+  beta,
+  D,
+  a,
+  Sigma,
+  y,
+  X,
+  Z,
+  id,
+  offset = NULL,
+  GHk = 5,
+  tol = 9.88131291682493e-324,
+  GHs = NULL
+)
 }
 \arguments{
 \item{beta}{Vector of regression coefficients}

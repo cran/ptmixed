@@ -1,8 +1,6 @@
 #' Poisson-Tweedie generalized linear model
 #'
 #' Estimates a Poisson-Tweedie generalized linear model.
-#'
-#' Maximum likelihood estimation of a Poisson-Tweedie GLM.
 #' 
 #' @param formula A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}
 #' @param offset An offset to be added to the linear predictor. Default is \code{NULL}.
@@ -22,21 +20,12 @@
 #' @author Mirko Signorelli
 #' @seealso \code{\link{ptmixed}} for the Poisson-Tweedie GLMM
 #' @examples
-#' # generate data
-#' set.seed(1234)
-#' n = 50
-#' group = rep(c(0,1), each = n/2)
-#' age = rpois(n, lambda = 5)
-#' beta = c(3, 0.3, 0.2, 0.1)
-#' X = model.matrix(~group + age + age*group)
-#' mu = exp(X %*% beta)
-#' y = rep(NA, n) 
-#' library(tweeDEseq)
-#' for (i in 1:n) y[i] = rPT(1, mu = mu[i], D = 5, a = -0.5, max = 1000)
-#' dataset = data.frame(y, group, age)
-#' rm(list = setdiff(ls(), 'dataset'))
+#' data(df1, package = 'ptmixed')
+#' 
 #' # estimate the model
-#' fit1 = ptglm(formula = y ~ group + age + age*group, data = dataset)
+#' fit1 = ptglm(formula = y ~ group*time, data = df1)
+#' 
+#' # view model summary:
 #' summary(fit1)
 
 
@@ -48,10 +37,15 @@ ptglm = function(formula, offset = NULL, data, maxit = c(500, 1e5),
   # identify elements
   y = data[, all.vars(formula[[2]])]
   X = model.matrix(formula[-2], data = data)
+  check0 = missing(offset)
+  if (check0) offset = NULL
+  if (!check0) {
+    offset = data[ , deparse(substitute(offset))]
+    data$offset = offset
+  }
   # starting values:
   if (is.null(theta.start)) {
     if (!is.null(offset)) {
-      data$offset = offset
       poi = glm(formula = formula, offset = offset,
                 family = poisson(), data = data)
     }

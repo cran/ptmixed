@@ -4,9 +4,20 @@
 \alias{ptmixed}
 \title{Poisson-Tweedie generalized linear mixed model}
 \usage{
-ptmixed(fixef.formula, id, offset = NULL, data, npoints = 5,
-  hessian = T, trace = T, theta.start = NULL, reltol = 1e-08,
-  maxit = c(10000, 100), freq.updates = 200, min.var.init = 0.001)
+ptmixed(
+  fixef.formula,
+  id,
+  offset = NULL,
+  data,
+  npoints = 5,
+  hessian = T,
+  trace = T,
+  theta.start = NULL,
+  reltol = 1e-08,
+  maxit = c(10000, 100),
+  freq.updates = 200,
+  min.var.init = 0.001
+)
 }
 \arguments{
 \item{fixef.formula}{A formula for the fixed effects part of the model. 
@@ -67,10 +78,12 @@ head(df1)
 # not computed - NB: we recommend to increase the number of
 # quadrature points to obtain much more accurate estimates,
 # as shown in example 2 below where we use 5 quadrature points)
+
 # estimate the model
-fit1 = ptmixed(fixef.formula = y ~ group + time, id = df1$id,
-              offset = df1$offset, data = df1, npoints = 1, 
+fit1 = ptmixed(fixef.formula = y ~ group + time, id = id,
+              offset = offset, data = df1, npoints = 1, 
               freq.updates = 200, hessian = FALSE, trace = TRUE)
+              
 # print summary:
 summary(fit1, wald = FALSE)
 
@@ -78,13 +91,18 @@ summary(fit1, wald = FALSE)
 # 2) Full computation that uses more quadrature points
 # for the likelihood approximation and includes numeric
 # evaluation of the hessian matrix
-fit2 = ptmixed(fixef.formula = y ~ group + time, id = df1$id,
-              offset = df1$offset, data = df1, npoints = 5, 
+
+# estimate the model:
+fit2 = ptmixed(fixef.formula = y ~ group + time, id = id,
+              offset = offset, data = df1, npoints = 5, 
               freq.updates = 200, hessian = TRUE, trace = TRUE)
-# print and get summary:
-results = summary(fit2, wald = TRUE)
+              
+# print summary:
+summary(fit2)
+
+# extract summary:
+results = summary(fit2)
 ls(results)
-# view table with estimates of regression coefficients, standard errors and Wald test:
 results$coefficients
 }
 }

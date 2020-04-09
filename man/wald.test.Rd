@@ -25,28 +25,24 @@ Compute a multivariate Wald test for one of the following
 models: Poisson-Tweedie GLMM, negative binomial GLMM, 
 Poisson-Tweedie GLM, negative binomial GLM. The null
 hypothesis has to be specified in the (matrix) form
-$L b = k$
+$L b = k$, where $b$ is the vector of regression coefficients
+and $L$ and $k$ are defined below
 }
 \examples{
 \donttest{
 # generate data
-set.seed(1234)
-n = 50
-group = rep(c(0,1), each = n/2)
-age = rpois(n, lambda = 5)
-beta = c(3, 0.05, 0.2, 0.03)
-X = model.matrix(~group + age + age*group)
-mu = exp(X \%*\% beta)
-y = rep(NA, n) 
-library(tweeDEseq)
-for (i in 1:n) y[i] = rPT(1, mu = mu[i], D = 2, a = 0, max = 1000)
-dataset = data.frame(y, group, age)
-rm(list = setdiff(ls(), 'dataset'))
-# estimate a negative binomial glm
-fit1 = nbglm(formula = y ~ group + age + age*group, data = dataset)
+data(df1, package = 'ptmixed')
+
+# estimate one of the following models: a Poisson-Tweedie or 
+# negative binomial GLMM (using ptmixed() or nbmixed()), or
+# a Poisson-Tweedie or negative binomial GLM (using ptglm() 
+# or nbgml())
+fit1 = nbglm(formula = y ~ group*time, data = df1)
+
 # define L for beta2 = beta4 = 0
 L = matrix(0, nrow = 2, ncol = 4)
-L[1, 2] = L[2, 4] = 1              
+L[1, 2] = L[2, 4] = 1
+              
 # compute multivariate Wald test
 wald.test(obj = fit1, L = L, k = NULL)
 }

@@ -48,10 +48,12 @@
 #' # not computed - NB: we recommend to increase the number of
 #' # quadrature points to obtain much more accurate estimates,
 #' # as shown in example 2 below where we use 5 quadrature points)
+#' 
 #' # estimate the model
-#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = df1$id,
-#'               offset = df1$offset, data = df1, npoints = 1, 
+#' fit1 = ptmixed(fixef.formula = y ~ group + time, id = id,
+#'               offset = offset, data = df1, npoints = 1, 
 #'               freq.updates = 200, hessian = FALSE, trace = TRUE)
+#'               
 #' # print summary:
 #' summary(fit1, wald = FALSE)
 #' 
@@ -59,13 +61,18 @@
 #' # 2) Full computation that uses more quadrature points
 #' # for the likelihood approximation and includes numeric
 #' # evaluation of the hessian matrix
-#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = df1$id,
-#'               offset = df1$offset, data = df1, npoints = 5, 
+#' 
+#' # estimate the model:
+#' fit2 = ptmixed(fixef.formula = y ~ group + time, id = id,
+#'               offset = offset, data = df1, npoints = 5, 
 #'               freq.updates = 200, hessian = TRUE, trace = TRUE)
-#' # print and get summary:
-#' results = summary(fit2, wald = TRUE)
+#'               
+#' # print summary:
+#' summary(fit2)
+#' 
+#' # extract summary:
+#' results = summary(fit2)
 #' ls(results)
-#' # view table with estimates of regression coefficients, standard errors and Wald test:
 #' results$coefficients
 #' }
 
@@ -75,6 +82,16 @@ ptmixed = function(fixef.formula, id, offset = NULL,
                    freq.updates = 200, min.var.init = 1e-3) {
   call = match.call()
   warning.list = list()
+  # identify elements
+  y = data[, all.vars(fixef.formula[[2]])]
+  X = model.matrix(fixef.formula[-2], data = data)
+  Z = as.matrix(model.matrix(~1, data = data))
+  # fix id an offset:
+  id = data[ , deparse(substitute(id))]
+  id = as.numeric(as.factor(id))
+  check0 = missing(offset)
+  if (check0) offset = NULL
+  if (!check0) offset = data[ , deparse(substitute(offset))]
   # preliminary checks:
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
   t = dim(data)[1] / length(unique(id))
@@ -84,12 +101,6 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)
   }
-  # identify elements
-  y = data[, all.vars(fixef.formula[[2]])]
-  X = model.matrix(fixef.formula[-2], data = data)
-  Z = as.matrix(model.matrix(~1, data = data))
-  # fix id:
-  id = as.numeric(as.factor(id))
   # NB: updates at every iteration coded as NA (but it can also be provided = 1)
   if (freq.updates == 1) freq.updates = NA
   # optim control values:

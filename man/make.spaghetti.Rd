@@ -4,10 +4,26 @@
 \alias{make.spaghetti}
 \title{Generate a spaghetti plot to visualize longitudinal data}
 \usage{
-make.spaghetti(x, y, id, group = NULL, data, col = NULL, pch = 16,
-  lty = 1, lwd = 1, main = "", xlab = NA, ylab = NA,
-  legend.title = "", cex.axis = 1, cex.main = 1, cex.lab = 1,
-  cex.leg = 1)
+make.spaghetti(
+  x,
+  y,
+  id,
+  group = NULL,
+  data,
+  col = NULL,
+  pch = 16,
+  lty = 1,
+  lwd = 1,
+  title = "",
+  xlab = NA,
+  ylab = NA,
+  legend.title = "",
+  cex.axis = 1,
+  cex.title = 1,
+  cex.lab = 1,
+  cex.leg = 1,
+  legend.inset = -0.3
+)
 }
 \arguments{
 \item{x}{the time variable (numeric vector)}
@@ -29,21 +45,23 @@ do not specify if not relevant)}
 
 \item{lwd}{line width}
 
-\item{main}{title for the plot}
+\item{title}{plot title}
 
-\item{xlab}{title for the x axis}
+\item{xlab}{label for the x axis}
 
-\item{ylab}{title for the y axis}
+\item{ylab}{label for the y axis}
 
 \item{legend.title}{legend title}
 
 \item{cex.axis}{font size for the axes}
 
-\item{cex.main}{title font size}
+\item{cex.title}{title font size}
 
 \item{cex.lab}{font size for axis labels}
 
 \item{cex.leg}{font size for the legend}
+
+\item{legend.inset}{moves legend more to the left / right}
 }
 \description{
 A spaghetti plot, or trajectory plot, is a plot that allows
@@ -70,7 +88,7 @@ rm(list = setdiff(ls(), 'data.long'))
 
 # create plot
 make.spaghetti(x = time, y, id, group, 
-data = data.long, main = 'spaghetti plot')
+data = data.long, title = 'spaghetti plot')
 }
 }
 \author{

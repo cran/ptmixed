@@ -4,8 +4,14 @@
 \alias{ptglm}
 \title{Poisson-Tweedie generalized linear model}
 \usage{
-ptglm(formula, offset = NULL, data, maxit = c(500, 1e+05), trace = T,
-  theta.start = NULL)
+ptglm(
+  formula,
+  offset = NULL,
+  data,
+  maxit = c(500, 1e+05),
+  trace = T,
+  theta.start = NULL
+)
 }
 \arguments{
 \item{formula}{A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}}
@@ -33,25 +39,13 @@ used in the optimization (\code{theta.init})
 \description{
 Estimates a Poisson-Tweedie generalized linear model.
 }
-\details{
-Maximum likelihood estimation of a Poisson-Tweedie GLM.
-}
 \examples{
-# generate data
-set.seed(1234)
-n = 50
-group = rep(c(0,1), each = n/2)
-age = rpois(n, lambda = 5)
-beta = c(3, 0.3, 0.2, 0.1)
-X = model.matrix(~group + age + age*group)
-mu = exp(X \%*\% beta)
-y = rep(NA, n) 
-library(tweeDEseq)
-for (i in 1:n) y[i] = rPT(1, mu = mu[i], D = 5, a = -0.5, max = 1000)
-dataset = data.frame(y, group, age)
-rm(list = setdiff(ls(), 'dataset'))
+data(df1, package = 'ptmixed')
+
 # estimate the model
-fit1 = ptglm(formula = y ~ group + age + age*group, data = dataset)
+fit1 = ptglm(formula = y ~ group*time, data = df1)
+
+# view model summary:
 summary(fit1)
 }
 \seealso{
