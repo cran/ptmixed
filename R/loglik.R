@@ -27,13 +27,12 @@ loglik.pt.1re = function(beta, D, a, Sigma, y, X, Z, id, offset = NULL,
   requireNamespace('mvtnorm')
   with.offset = !is.null(offset)
   RE.size = 1
-  t = length(y) / length(unique(id))
-  if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
-                       the unbalanced case is not yet implemented (check back soon!)')
+  numid = as.numeric(as.factor(id))
   if (is.null(GHs)) {
-    GHs = GHpoints.pt.1re(y=y, id=id, X=X, Z=Z, beta=beta, D=D, a=a, 
-                       Sigma=Sigma, offset=offset, RE.size = RE.size,
-                       GHk=GHk, tol = tol)
+    GHs = GHpoints.pt.1re(y = y, id = id, X = X, Z = Z, 
+                       beta = beta, D = D, a = a, Sigma = Sigma, 
+                       offset = offset, RE.size = RE.size,
+                       GHk = GHk, tol = tol)
   }
   if (with.offset) Delta.ij = c(X %*% beta + c(offset))
   else Delta.ij = c(X %*% beta)
@@ -44,16 +43,15 @@ loglik.pt.1re = function(beta, D, a, Sigma, y, X, Z, id, offset = NULL,
   else if (GHk == 1) log.p.b = as.matrix(log.p.b)
   aux = dim(GHs$scaled.b[[1]])[1]
   n = length(unique(id))
-  mus = matrix(NA, n*t, aux) 
-  k = 1
+  mus = matrix(NA, length(y), aux) 
   for (i in 1:n) {
-    d.ij = Delta.ij[k:(k+t-1)]
-    Z.ij = as.matrix(Z[k:(k+t-1),])
+    pos = (numid == i)
+    d.ij = Delta.ij[pos]
+    Z.ij = as.matrix(Z[pos,])
     b.values = GHs$scaled.b[[i]]
     for (j in 1:aux) {
-      mus[k:(k+t-1), j] = d.ij + Z.ij %*% b.values[j,]
+      mus[pos, j] = d.ij + Z.ij %*% b.values[j,]
     }
-    k = k+t
   }
   mus = exp(mus)
   #

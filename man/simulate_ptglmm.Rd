@@ -5,8 +5,8 @@
 \title{Simulate data from the Poisson-Tweedie generalized linear mixed model}
 \usage{
 simulate_ptglmm(
-  n = 10,
-  t = 4,
+  n = 20,
+  t = 5,
   seed = 1,
   beta = c(3, 0, 0, 0.4),
   D = 1.5,

@@ -26,7 +26,6 @@ GHpoints.pt.1re <- function (y, id, X, Z, beta, D, a, Sigma, offset = NULL,
   inv.chol <- rep(NA, n)
   det.Bs <- numeric(n)
   for (i in 1:n) {
-    #print(i)
     id.i <- id == i
     opt <- try( optim(rep(0, RE.size), fn, gr, y.i = y[id.i], delta.ij = Delta.ij[id.i], 
                       Z.ij = as.matrix(Z[id.i,]), tol = tol, method = "BFGS",

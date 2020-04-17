@@ -35,7 +35,7 @@
 #' make.spaghetti(x = time, y = y, id = id,
 #' group = group, data = example2$data)
 
-simulate_ptglmm = function(n = 10, t = 4, seed = 1, 
+simulate_ptglmm = function(n = 20, t = 5, seed = 1, 
                            beta = c(3, 0, 0, 0.4), D = 1.5, a = -1, 
                            sigma2 = 0.8^2, offset = F) {
   requireNamespace('tweeDEseq')

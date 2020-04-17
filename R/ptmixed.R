@@ -94,9 +94,6 @@ ptmixed = function(fixef.formula, id, offset = NULL,
   if (!check0) offset = data[ , deparse(substitute(offset))]
   # preliminary checks:
   if (length(fixef.formula) != 3) stop('fixef.formula should be in the form y ~ x1 + x2 +...')
-  t = dim(data)[1] / length(unique(id))
-  if (t %% 1 !=0) stop('The dataset appears to be unbalanced. The code for
-                       the unbalanced case is not implemented yet')
   if (npoints %%1 !=0) stop('npoints should be a natural number > 1')
   if (!is.null(maxit)) {
     if (length(maxit) == 1) maxit = c(maxit, 100)

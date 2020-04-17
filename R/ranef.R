@@ -26,7 +26,7 @@
 #' ranef(obj = fit0)
 #' }
 
-ranef <- function (obj) {
+ranef = function (obj) {
   if (class(obj)[1] != 'ptglmm') stop('obj should be of class ptglmm')
   # extract arguments from ptglmm object call and mle
   # get y, id, X, Z, offset:
@@ -61,31 +61,30 @@ ranef <- function (obj) {
   requireNamespace('tweeDEseq')
   #require(mvtnorm)
   with.offset = !is.null(offset)
-  if (with.offset) Delta.ij <- c(X %*% beta + c(offset))
-  else Delta.ij <- c(X %*% beta)
-  n <- length(unique(id))
-  GH <- gauher(GHk) # returns ascissae and weights for Gauss-Hermite quadrature
-  b <- as.matrix(expand.grid(rep(list(GH$x), RE.size)), drop = F)
-  wGH <- as.matrix(expand.grid(rep(list(GH$w), RE.size)), drop = F)
-  wGH <- 2^(RE.size/2) * apply(wGH, 1, prod) * exp(rowSums(b * b))
-  b <- sqrt(2) * b
+  if (with.offset) Delta.ij = c(X %*% beta + c(offset))
+  else Delta.ij = c(X %*% beta)
+  n = length(unique(id))
+  GH = gauher(GHk) # returns ascissae and weights for Gauss-Hermite quadrature
+  b = as.matrix(expand.grid(rep(list(GH$x), RE.size)), drop = F)
+  wGH = as.matrix(expand.grid(rep(list(GH$w), RE.size)), drop = F)
+  wGH = 2^(RE.size/2) * apply(wGH, 1, prod) * exp(rowSums(b * b))
+  b = sqrt(2) * b
   ###########
-  fn <- function (b, y.i, delta.ij, Z.ij, tol) {
-    log.p.b <- dnorm(b, 0, sd = sqrt(Sigma), log = T)
+  fn = function (b, y.i, delta.ij, Z.ij, tol) {
+    log.p.b = dnorm(b, 0, sd = sqrt(Sigma), log = T)
     p.yb = mapply(PT.logdens, x = y.i, mu = exp(delta.ij + Z.ij %*% b), 
                   D = D, a = a, tol = tol)
-    log.p.yb <- sum(p.yb)
+    log.p.yb = sum(p.yb)
     - log.p.yb - log.p.b
   }
-  gr <- function (b, y.i, delta.ij, Z.ij, tol) {
+  gr = function (b, y.i, delta.ij, Z.ij, tol) {
     cd(b, fn, y.i = y.i, delta.ij = delta.ij, Z.ij = Z.ij, tol = tol)
   }
   
   out = rep(NA, n)
   for (i in 1:n) {
-    #print(i)
-    id.i <- id == i
-    opt <- try( optim(rep(0, RE.size), fn = fn, gr = gr,
+    id.i = (id == i)
+    opt = try( optim(rep(0, RE.size), fn = fn, gr = gr,
                       y.i = y[id.i], delta.ij = Delta.ij[id.i], 
                       Z.ij = as.matrix(Z[id.i,]), tol = tol, method = "BFGS",
                       hessian = FALSE), silent = F )

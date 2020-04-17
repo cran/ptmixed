@@ -18,6 +18,14 @@ Each subsection corresponds to a specific package version.
 0.5.x
 =====
 
+ptmixed 0.5.2
+-------------
+
+-   Released: April 2020
+-   Adapted code so that it runs both for balanced and unbalanced
+    datasets (previously balanced design was assumed)
+-   Fixed problem with visualization of vignette on CRAN page
+
 ptmixed 0.5.1
 -------------
 

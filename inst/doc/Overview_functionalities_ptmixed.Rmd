@@ -1,0 +1,195 @@
+---
+title: "An introduction to the R package ptmixed"
+author: "Mirko Signorelli"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{ptmixed}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+## What's ptmixed?
+
+`ptmixed` is an `R` package that has been created to estimate the Poisson-Tweedie mixed effects model proposed by Signorelli, Spitali and Tsonaka (2020, in review). The Poisson-Tweedie mixed effects model is a generalized linear mixed model (GLMM) for count data that encompasses the negative binomial and Poisson GLMMs as special cases. It is particularly suitable for the analysis of overdispersed count data, because it allows to model overdispersion, zero-inflation and heavy-tails more flexibly than the negative binomial GLMM.
+
+The package comprises not only functions for the estimation of the Poisson-Tweedie mixed model, but also functions for the estimation of the negative binomial and Poisson-Tweedie GLMs and of the negative binomial GLMM, alongside with some (simple) data visualization functions.
+
+## Get started
+
+The package can be installed directly from CRAN using
+
+```{r, eval=FALSE, echo=TRUE, results='asis'}
+install.packages('ptmixed')
+```
+
+After installing the package, you can load its functionalities through
+
+```{r, eval=TRUE, echo=TRUE, results='asis'}
+library('ptmixed')
+```
+
+# An overview of the package functionalities
+
+The package comprises different types of functions:
+
+* functions for the estimation of the Poisson-Tweedie and negative binomial GLMMs: see `?ptmixed` and `?nbmixed`
+* functions for the estimation of the Poisson-Tweedie and negative binomial GLMs: see `?ptglm` and `?nbglm`
+* functions to summarize model fits: see `?summary.ptglmm` and `?summary.ptglm`
+* a function that allows to carry out univariate and multivariate Wald tests: see `?wald.test`
+* a function to compute the predicted random effects for a fitted Poisson-Tweedie or negative binomial GLMM: see `?ranef`
+* functions for data visualization: see `?pmf` and `?make.spaghetti`
+
+# A step by step example
+
+In this section I am going to present a step by step example whose aim is to show how the `R` package `ptmixed` can be used to estimate the Poisson-Tweedie GLMM, as well as a few simpler models.
+
+## Data preparation
+
+All functions in the package assume that data are in the so-called ''long format''. Let's generate an example dataset (already in long format) using the function `simulate_ptglmm`:
+
+```{r, eval=T, echo=T, results='markup'}
+example.df = simulate_ptglmm(n = 14, t = 4, seed = 1234,
+                             beta = c(2.3, -0.9, -0.2, 0.5),
+                             D = 1.5, a = -1,
+                             sigma2 = 0.7)
+data.long = example.df$data
+head(data.long)
+```
+
+In this example I have generated a dataset of 14 subjects with 4 repeated measurements each. `y` is the response variable, `id` denotes the subject identicator, `group` is a dummy variable and `time` is the time at which a measurement was taken.
+
+## Data visualization
+
+Before fitting a model, it is often useful to make a few plots to get a feeling of the data that you would like to model. Below I use two simple plots to visualize the distribution of the response variable and its relationship with the available covariates.
+
+We can view the marginal distribution of the response variable `y` using the function `pmf`, and visualize the individual trajectories of subjects over time using the function `make.spaghetti`:
+
+```{r, eval=T, echo=T, results='markup', fig.height=3.5, fig.width=5}
+pmf(data.long$y, xlab = 'y', title = 'Distribution of y')
+make.spaghetti(x = time, y = y, id = id,
+  group = group, data = data.long,
+  title = 'Trajectory ("spaghetti") plot',
+  legend.title = 'GROUP')
+```
+
+## The Poisson-Tweedie generalized linear mixed model
+
+The most important function of the package, `ptmixed`, is a function that makes it possible to carry out maximum likelihood (ML) estimation of the Poisson-Tweedie GLMM. This function employs the adaptive Gauss-Hermite quadrature (AGHQ) method to evaluate the marginal likelihood of the GLMM, and then maximizes this likelihood using the Nelder-Mead and BFGS methods. Finally, if `hessian = T` (default value) a numerical evaluation of the hessian matrix (needed to compute the standard errors associated to the parameter estimates) in correspondance of the ML estimate is performed.
+
+### Model Estimation
+
+Estimation of the Poisson-Tweedie GLMM can be carried out using `ptmixed`:
+
+```{r, eval=T, echo=T, results='markup'}
+pt_glmm = ptmixed(fixef.formula = y ~ group*time, id = id,
+                     data = data.long, npoints = 3, 
+                     hessian = T, trace = F)
+```
+
+The code above requires to estimate a GLMM 
+
+* with `y` as response, `group`, `time` and their interaction as fixed effects (as specified in `fixef.formula`), and a subject-specific random intercept (`id = id`)
+* using an AGHQ with 3 quadrature points (`npoints = 3`)
+* and to further evaluate the Hessian matrix at the MLE (`hessian = T`)
+
+Note that the function comprises several other arguments, detailed in the function's help page. In particular, there are four remarks that I'd like to make here:
+
+* an offset term, if relevant, can be included through the `offset` argument
+* a higher number of quadrature points can be specified by changing the value of `npoints` (my recommendation is to use `npoints = 5`)
+* detailed information about the optimization can be printed on screen by specifying `trace = T` (here I have set `trace = F` to prevent a long tracing output to be printed in the middle of the vignette)
+* ML estimation for this model is not trivial, and optimizations may sometimes fail to converge. If this happens, you may try to use a different number of quadrature points (`npoints`), to change the default values of the arguments `freq.updates`, `reltol`, `maxit` and `min.var.init`, or to supply an alternative (sensibly chosen) starting value (`theta.start`)
+
+### Viewing parameter estimates, standard errors and p-values
+
+The results of the fitted model can be viewed using
+
+```{r, eval=T, echo=T, results='markup'}
+summary(pt_glmm)
+```
+
+that reports the ML estimates of the regression coefficients (column `Estimate`), the associated standard errors (column `Std. error`) and univariate Wald tests (columns `z` and `p.value`), as well as the ML estimates of the dispersion and power parameters of the Poisson-Tweedie distribution, and the ML estimate of the variance of the random effects.
+
+### Testing more complex hypotheses
+
+More complex hypotheses can be tested using the multivariate Wald test (or, when possible, the likelihood ratio test).
+
+For example, one may want to test the null hypothesis that there are no differences between the two groups, that is to say that the regression coefficients of `group` and `group:time` are both = 0.
+
+To test this hypothesis we first need to specify it in the form $L \beta = 0$, where $L$ is specified as follows:
+
+```{r, eval=T, echo=T, results='markup'}
+L.group = matrix(0, nrow = 2, ncol = 4)
+L.group[1, 2] = L.group[2, 4] = 1
+L.group
+```
+
+Then, we can proceed with computing the multivariate Wald test:
+
+```{r, eval=T, echo=T, results='markup'}
+wald.test(pt_glmm, L = L.group, k = c(0, 0))
+```
+
+### Computing the predicted random effects
+
+To computate the predicted random effects, simply use
+
+```{r, eval=T, echo=T, results='markup'}
+ranef(pt_glmm)
+```
+
+## Simpler models
+
+The Poisson-Tweedie GLMM is an extension of three simpler models:
+
+* negative binomial GLMM (this is obtained by fixing the power parameter a = 0)
+* Poisson-Tweedie GLM (this is obtained by removing the random effects from the model)
+* negative binomial GLM (this is obtained by fixing the power parameter a = 0 and removing the random effects from the model)
+
+For this reason, the package also offers the possibility to estimate these simpler models, as illustrated below.
+
+### Negative binomial generalized linear mixed model
+
+The syntax to estimate the negative binomial GLMM is the same as that used for the Poisson-Tweedie GLMM. Just make sure to replace the function `ptmixed` with `nbmixed`:
+
+```{r, eval=T, echo=T, results='markup'}
+nb_glmm = nbmixed(fixef.formula = y ~ group*time, id = id,
+                     data = data.long, npoints = 3, 
+                     hessian = T, trace = F)
+```
+
+To view the model summary and compute the predicted random effects, once again you can use
+
+```{r, eval=T, echo=T, results='markup'}
+summary(nb_glmm)
+ranef(nb_glmm)
+```
+
+### Poisson-Tweedie generalized linear model
+
+Estimation of the Poisson-Tweedie GLM can be done using the `ptglm` function:
+
+```{r, eval=T, echo=T, results='markup'}
+pt_glm = ptglm(formula = y ~ group*time, data = data.long, trace = F)
+summary(pt_glm)
+```
+
+### Negative binomial generalized linear model
+
+Finally, estimation of the negative binomial GLM can be done using the `nbglm` function:
+
+```{r, eval=T, echo=T, results='markup'}
+nb_glm = nbglm(formula = y ~ group*time, data = data.long, trace = F)
+summary(nb_glm)
+```
+
+
+# Further details and material
+
+The aim of this vignette is to provide a quick-start introduction to the `R` package `ptmixed`. Here I have focused my attention on the fundamental aspects that one needs to use the package. 
+
+Further details, functions and examples can be found in [the manual of the package](https://CRAN.R-project.org/package=ptmixed/ptmixed.pdf).
+
