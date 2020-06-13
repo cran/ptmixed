@@ -18,6 +18,19 @@ Each subsection corresponds to a specific package version.
 0.5.x
 =====
 
+ptmixed 0.5.4
+-------------
+
+-   Released: June 2020
+-   The article describing the Poisson-Tweedie GLMM has been accepted
+    for publication in *Statistical Modelling*! You can read the
+    preprint of the article [on arXiv
+    (arXiv:2004.11193)](http://arxiv.org/abs/2004.11193).
+-   Added link to arXiv preprint in package description and vignette
+-   Added file with citation info
+-   Added further arguments to `make.spaghetti()`; `cex.lab` argument
+    fixed
+
 ptmixed 0.5.2
 -------------
 

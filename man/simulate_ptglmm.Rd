@@ -35,7 +35,7 @@ this order: intercept, group main effect, time main effect, group*time interacti
 }
 \value{
 A list containing the following elements: a dataframe (\code{data})
-containing the response y, the subject id, the group indicator and time; 
+containing the response y, the subject id, the group indicator and time;
 a vector with the true random intercept values (\code{true.randint}).
 }
 \description{
@@ -43,7 +43,7 @@ Simulates a dataset comprising t repeated measurements for n subjects
 from a Poisson-Tweedie GLMM. Subjects are assumed to belong to two
 different groups. The linear predictor comprises an intercept,
 main effects of group and of time, and the interaction between time and
-group; a random intercept; and, optionally, a normally-distributed 
+group; a random intercept; and, optionally, a normally-distributed
 offset term.
 }
 \examples{

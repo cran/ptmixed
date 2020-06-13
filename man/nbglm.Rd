@@ -29,7 +29,7 @@ the BFGS method and, if this fails, by the Nelder-Mead method}
 vector of regression coefficients and the dispersion parameter}
 }
 \value{
-A list containing the following elements: function's call (\code{call}); 
+A list containing the following elements: function's call (\code{call});
 maximum likelihood estimate (\code{mle});  value of the
 loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
 the observed Fisher information (\code{fisher.info}) and the starting values

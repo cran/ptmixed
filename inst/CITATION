@@ -1,0 +1,18 @@
+citHeader("To cite ptmixed in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data",
+  author   = personList(as.person("M. Signorelli"),
+                   as.person("P. Spitali"),
+                   as.person("R. Tsonaka")),
+  journal  = "Statistical Modelling",
+  year     = "2020 (in press)",
+  url      = "https://arxiv.org/abs/2004.11193",
+  textVersion = paste(
+	"Signorelli, M., Spitali, P., Tsonaka, R. (2020, in press).",
+        "Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data",
+        "Statistical Modelling",
+        "URL https://arxiv.org/abs/2004.11193"
+  )
+)

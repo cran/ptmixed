@@ -26,11 +26,11 @@ the BFGS method and, if this fails, by the Nelder-Mead method}
 \item{trace}{Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.}
 
 \item{theta.start}{Numeric vector comprising initial parameter values for the
-vector of regression coefficients, the dispersion parameter and the power parameter 
+vector of regression coefficients, the dispersion parameter and the power parameter
 (to be specified exactlyin this order!).}
 }
 \value{
-A list containing the following elements: function's call (\code{call}); 
+A list containing the following elements: function's call (\code{call});
 maximum likelihood estimate (\code{mle});  value of the
 loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
 the observed Fisher information (\code{fisher.info}) and the starting values

@@ -12,10 +12,10 @@ data(df1)
 }
 \description{
 An example dataset of a study with longitudinal counts, used
-to illustrate how `ptmixed()` and `nbmixed()` work.
+to illustrate how \code{ptmixed()} and \code{nbmixed()} work.
 }
 \seealso{
-examples in the \code{\link{nbmixed}} and 
+examples in the \code{\link{nbmixed}} and
 \code{\link{ptmixed}} help pages
 }
 \author{

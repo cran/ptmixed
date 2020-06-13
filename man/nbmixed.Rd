@@ -35,8 +35,8 @@ nbmixed(
 \item{trace}{Logical value. If \code{TRUE}, additional information is printed during the optimization. Default is \code{TRUE}.}
 
 \item{theta.start}{Numeric vector comprising initial parameter values for the
-vector of regression coefficients, the dispersion parameter (using the same parametrization of \code{ptmixed}) 
-and the variance of the random intercept. 
+vector of regression coefficients, the dispersion parameter (using the same parametrization of \code{ptmixed})
+and the variance of the random intercept.
 Default is \code{NULL}: initial
 parameter estimates are computed automatically by the function.}
 
@@ -46,8 +46,8 @@ parameter estimates are computed automatically by the function.}
 the Nelder-Mead method and, if this fails, by the BFGS method}
 
 \item{freq.updates}{Number of iterations after which the quadrature points are updated when the Nelder-Mead
-algorithm is used for the optimization. Default value is 200. To update the quadrature points at every iteration 
-(note that this may make the computation about 10x slower), set \code{freq.updates = 1} 
+algorithm is used for the optimization. Default value is 200. To update the quadrature points at every iteration
+(note that this may make the computation about 10x slower), set \code{freq.updates = 1}
 or \code{freq.updates = NA}. The function first tries to optimize the loglikelihood using the Nelder-Mead
 algorithm, updating the quadrature points every \code{freq.updates} iterations. If this fails to converge,
 a second attempt is made using the BFGS algorithm, for which the quadrature points are updated at every iteration.}
@@ -56,11 +56,11 @@ a second attempt is made using the BFGS algorithm, for which the quadrature poin
 this value, estimation is stopped and the user is advided to use the simpler Poisson-Tweedie GLM is used. Default is 1e-3.}
 }
 \value{
-A list containing the following elements: function's call (\code{call}); 
+A list containing the following elements: function's call (\code{call});
 maximum likelihood estimate (\code{mle});  value of the
 loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
-the observed Fisher information (\code{fisher.info}), if \code{hessian = T}; the number of quadrature points 
-used (\code{quad.points}) and the starting value used in the optimization (\code{theta.init}); 
+the observed Fisher information (\code{fisher.info}), if \code{hessian = T}; the number of quadrature points
+used (\code{quad.points}) and the starting value used in the optimization (\code{theta.init});
 relevant warnings (\code{warnings}).
 }
 \description{

@@ -18,6 +18,7 @@
 #' @param ylab label for the y axis
 #' @param pch dot type
 #' @param legend.title legend title
+#' @param ylim limits for the y axis
 #' @param cex.axis font size for the axes
 #' @param cex.title title font size
 #' @param cex.lab font size for axis labels
@@ -53,7 +54,7 @@ make.spaghetti = function(x, y, id, group = NULL, data,
                       col = NULL, pch = 16,
                       lty = 1, lwd = 1,
                       title = '', xlab = NA, ylab = NA,
-                      legend.title = '',
+                      legend.title = '', ylim = NULL,
                       cex.axis = 1, cex.title = 1, 
                       cex.lab = 1, cex.leg = 1,
                       legend.inset = -0.3) {
@@ -62,6 +63,8 @@ make.spaghetti = function(x, y, id, group = NULL, data,
   x = data[ , deparse(substitute(x))]
   y = data[ , deparse(substitute(y))]
   id = data[ , deparse(substitute(id))]
+  if (is.null(ylim)) ylim = range(y)
+  if (length(ylim) !=2) warning('ylim should be a vector of length 2')
   check = missing(group)
   if (check) group = NULL
   if (!check) group = data[ , deparse(substitute(group))]
@@ -86,8 +89,9 @@ make.spaghetti = function(x, y, id, group = NULL, data,
     levels(col) = palette
     col = as.character(col)
   }
-  plot(y ~ x, col = col, pch = pch, main = title, xlab = xlab,
-       ylab = ylab, cex.axis = cex.axis, cex.lab = cex.axis)
+  plot(y ~ x, col = col, pch = pch, main = title, 
+       xlab = xlab, ylab = ylab, ylim = ylim,
+       cex.axis = cex.axis, cex.lab = cex.lab)
   data.long = data.frame(x, y, id, col, stringsAsFactors = F)
   seg.list = names(which(table(data.long$id) >= 2))
   nsegm = length(seg.list)

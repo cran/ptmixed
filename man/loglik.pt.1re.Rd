@@ -42,7 +42,7 @@ loglik.pt.1re(
 
 \item{tol}{Tolerance value for the evaluation of the probability mass function of the Poisson-Tweedie distribution}
 
-\item{GHs}{Quadrature points at which to evaluate the loglikelihood. If \code{NULL} (default value), 
+\item{GHs}{Quadrature points at which to evaluate the loglikelihood. If \code{NULL} (default value),
 the GH quadrature points are computed internally}
 }
 \value{
@@ -50,7 +50,7 @@ The loglikelihood value obtained using a Gauss-Hermite quadrature
 approximation with \code{GHk} quadrature points.
 }
 \description{
-Evaluates the loglikelihood of a Poisson-Tweedie generalized linear mixed model 
+Evaluates the loglikelihood of a Poisson-Tweedie generalized linear mixed model
 with random intercept, using the adaptive Gauss-Hermite quadrature rule.
 }
 \seealso{

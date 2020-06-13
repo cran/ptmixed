@@ -7,8 +7,8 @@
 wald.test(obj, L, k = NULL)
 }
 \arguments{
-\item{obj}{an object of class \code{ptglmm} (obtained from 
-\code{ptmixed} or \code{nbmixed}) or \code{ptglm} (obtained from 
+\item{obj}{an object of class \code{ptglmm} (obtained from
+\code{ptmixed} or \code{nbmixed}) or \code{ptglm} (obtained from
 \code{ptglm} or \code{nbglm})}
 
 \item{L}{a matrix used to define the hypothesis to test,
@@ -22,7 +22,7 @@ A data frame with the result of the test
 }
 \description{
 Compute a multivariate Wald test for one of the following
-models: Poisson-Tweedie GLMM, negative binomial GLMM, 
+models: Poisson-Tweedie GLMM, negative binomial GLMM,
 Poisson-Tweedie GLM, negative binomial GLM. The null
 hypothesis has to be specified in the (matrix) form
 $L b = k$, where $b$ is the vector of regression coefficients

@@ -18,6 +18,7 @@ make.spaghetti(
   xlab = NA,
   ylab = NA,
   legend.title = "",
+  ylim = NULL,
   cex.axis = 1,
   cex.title = 1,
   cex.lab = 1,
@@ -32,7 +33,7 @@ make.spaghetti(
 
 \item{id}{the subject indicator}
 
-\item{group}{the group that each subject belongs to (optional, 
+\item{group}{the group that each subject belongs to (optional,
 do not specify if not relevant)}
 
 \item{data}{a data frame containing x, y, id and optionally group}
@@ -53,6 +54,8 @@ do not specify if not relevant)}
 
 \item{legend.title}{legend title}
 
+\item{ylim}{limits for the y axis}
+
 \item{cex.axis}{font size for the axes}
 
 \item{cex.title}{title font size}
@@ -65,7 +68,7 @@ do not specify if not relevant)}
 }
 \description{
 A spaghetti plot, or trajectory plot, is a plot that allows
-to compare across individuals or groups the trajectories 
+to compare across individuals or groups the trajectories
 of a longitudinal outcome
 }
 \examples{

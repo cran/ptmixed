@@ -20,7 +20,7 @@ pmf(
 \arguments{
 \item{x}{the (discrete) variable of interest}
 
-\item{absolute}{logical. If \code{TRUE} (default) absolute frequencies 
+\item{absolute}{logical. If \code{TRUE} (default) absolute frequencies
 are plotted, if \code{FALSE} relative frequencies}
 
 \item{xlim}{limits for the x axis}
