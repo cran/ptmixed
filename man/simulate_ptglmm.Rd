@@ -60,6 +60,11 @@ pmf(example2$data$y)
 make.spaghetti(x = time, y = y, id = id,
 group = group, data = example2$data)
 }
+\references{
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
+data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
+}
 \author{
 Mirko Signorelli
 }

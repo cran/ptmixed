@@ -23,10 +23,16 @@
 #' @param cex.title title font size
 #' @param cex.lab font size for axis labels
 #' @param cex.leg font size for the legend
-#' @param legend.inset moves legend more to the left / right
+#' @param margins use this argument if you want to overwrite the default 
+#' function margins
+#' @param legend.inset moves legend more to the left / right (default is -0.3)
+#' @param legend.space interspace between lines in the legend (default is 1)
 #' @import graphics
 #' @export
 #' @author Mirko Signorelli
+#' @references Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
+#' mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
+#' data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 #' @examples
 #' \donttest{
 #' # generate example data
@@ -57,9 +63,12 @@ make.spaghetti = function(x, y, id, group = NULL, data,
                       legend.title = '', ylim = NULL,
                       cex.axis = 1, cex.title = 1, 
                       cex.lab = 1, cex.leg = 1,
-                      legend.inset = -0.3) {
+                      margins = NULL,
+                      legend.inset = -0.3, legend.space = 1) {
   if (is.na(xlab)) xlab = deparse(substitute(x))
   if (is.na(ylab)) ylab = deparse(substitute(y))
+  sort.x = order(data[ , deparse(substitute(x))])
+  data = data[sort.x, ]
   x = data[ , deparse(substitute(x))]
   y = data[ , deparse(substitute(y))]
   id = data[ , deparse(substitute(id))]
@@ -78,10 +87,13 @@ make.spaghetti = function(x, y, id, group = NULL, data,
     nlevs = length(unique(group))
     if (is.null(col)) {
       palette = c("#1F78B4", "#33A02C", "#FB9A99", "#E31A1C","#A6CEE3", "#B2DF8A", 
-      "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A", "#FFFF99", "#B15928")
-      # this palette is a reordered version of brewer.pal(12, 'Paired') from RColorBrewer
+      "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A", "#B15928")
+      # this palette is a reordered version of brewer.pal(12, 'Paired') 
+      # from RColorBrewer; the yellow was removed because it is hardly visible
+      if (nlevs > 11) palette = rep(palette, 50)
       palette = palette[1:nlevs]
     }
+    if (!is.null(margins)) par(mar = margins)
     if (!is.null(col)) palette = col
     group = as.factor(group)
     group.names = levels(group)
@@ -108,6 +120,7 @@ make.spaghetti = function(x, y, id, group = NULL, data,
     par(xpd = T)
     legend(x = "right", inset=c(legend.inset, 0), levels(group), 
            title = legend.title, pch = pch,
+           y.intersp = legend.space,
            col = palette, bty = 'n', cex = cex.leg)
   }
 }

@@ -15,6 +15,25 @@ package - in other words, within a section you will find all those
 package versions a.b.x where a and b are fixed whereas x = 1, 2, 3, …
 Each subsection corresponds to a specific package version.
 
+1.0.x
+=====
+
+ptmixed 1.0.0
+-------------
+
+-   Released: August 2020
+-   The article describing the Poisson-Tweedie GLMM is now published in
+    *Statistical Modelling*! The article is published with Open Access,
+    so anybody can freely download it [from the website of Statistical
+    Modelling](https://doi.org/10.1177/1471082X20936017)
+-   Updated package description, citation info, vignette and help pages
+    to include references to the article
+-   Added example on how to compute the likelihood ratio test in the
+    vignette
+-   Added `margins` and `legend.space` arguments to `make.spaghetti()`.
+    Added automatic sorting of provided dataframe ( = no need to
+    pre-sort it any more!)
+
 0.5.x
 =====
 
@@ -22,10 +41,6 @@ ptmixed 0.5.4
 -------------
 
 -   Released: June 2020
--   The article describing the Poisson-Tweedie GLMM has been accepted
-    for publication in *Statistical Modelling*! You can read the
-    preprint of the article [on arXiv
-    (arXiv:2004.11193)](http://arxiv.org/abs/2004.11193).
 -   Added link to arXiv preprint in package description and vignette
 -   Added file with citation info
 -   Added further arguments to `make.spaghetti()`; `cex.lab` argument

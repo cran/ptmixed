@@ -23,7 +23,9 @@ make.spaghetti(
   cex.title = 1,
   cex.lab = 1,
   cex.leg = 1,
-  legend.inset = -0.3
+  margins = NULL,
+  legend.inset = -0.3,
+  legend.space = 1
 )
 }
 \arguments{
@@ -64,7 +66,12 @@ do not specify if not relevant)}
 
 \item{cex.leg}{font size for the legend}
 
-\item{legend.inset}{moves legend more to the left / right}
+\item{margins}{use this argument if you want to overwrite the default
+function margins}
+
+\item{legend.inset}{moves legend more to the left / right (default is -0.3)}
+
+\item{legend.space}{interspace between lines in the legend (default is 1)}
 }
 \description{
 A spaghetti plot, or trajectory plot, is a plot that allows
@@ -93,6 +100,11 @@ rm(list = setdiff(ls(), 'data.long'))
 make.spaghetti(x = time, y, id, group, 
 data = data.long, title = 'spaghetti plot')
 }
+}
+\references{
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
+data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }
 \author{
 Mirko Signorelli

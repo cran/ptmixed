@@ -28,6 +28,11 @@ for the Poisson-Tweedie and negative binomial generalized
 linear mixed models (fitted through \code{ptmixed} and
 \code{nbmixed} respectively)
 }
+\references{
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
+data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
+}
 \seealso{
 \code{\link{ptmixed}}, \code{\link{nbmixed}} and the examples therein
 }
