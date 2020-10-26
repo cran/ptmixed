@@ -44,7 +44,13 @@ simulate_ptglmm = function(n = 20, t = 5, seed = 1,
   requireNamespace('tweeDEseq')
   if (D < 1) stop('D should be >= 1')
   if (a > 1) stop('D should be <= 1')
+  if (a == 1 & D > 1) stop('When a = 1 (Poisson distribution), D can only be = 1')
   if (sigma2 < 0) stop('sigma2 should be > 0')
+  warn.text = 'is close to the boundary of the PT GLMM. This typically makes
+  estimation of the PT GLMM challenging. Proceed with care.'
+  if (D <= 1.1) warning(paste('D', warn.text))
+  if (a >= 0.9) warning(paste('a', warn.text))
+  if (sigma2 < 0.1) warning(paste('sigma2', warn.text))
   id = rep(1:n, each = t)
   n.ceil = ceiling(n/2)
   group = ifelse(id <= n.ceil, 0, 1)

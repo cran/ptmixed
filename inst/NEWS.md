@@ -18,6 +18,14 @@ Each subsection corresponds to a specific package version.
 1.0.x
 =====
 
+ptmixed 1.0.1
+-------------
+
+-   Released: October2020
+-   Updated URL in DESCRIPTION file
+-   Added `na.rm = T` in computation of `ylim` within `make.spaghetti()`
+-   Added warnings in `simulate_ptglmm`
+
 ptmixed 1.0.0
 -------------
 

@@ -1,4 +1,4 @@
-af6b66db1e490ed977c61313f487e4fa *DESCRIPTION
+ac9c76ed12717cc94a8cddf2148cb0f6 *DESCRIPTION
 7a46c6e8420ca447e861489a64a4b0ca *NAMESPACE
 a4ae0e283e62454b511770733758b27b *R/GHpoints.R
 a29da63e9edae872344bac6e802edc7c *R/PTfunctions.R
@@ -7,14 +7,14 @@ e31e3ad5a32ad0a4c48465dad16fb2f7 *R/cd.R
 3883106e981dc3641d934b4a87f6da7d *R/df1.R
 e7fa8fec292b4105ba2e0e95ea031306 *R/gauher.R
 f86a31a338cfe2275af3864974c6a297 *R/loglik.R
-17cf1b9be1ab830287510963b67ddfb4 *R/makespaghetti.R
+e4c33c43e7e1b839b6d821c43f674d5f *R/makespaghetti.R
 71c02e5c13a8b466bca5fdc79e8a3e14 *R/nbglm.R
 89e4c722ec45e341988f08edb43064ea *R/nbmixed.R
 25c90c27654e15bf3bf840087e7d403e *R/pmf.R
 fdcdcd12d43eae4184079845abf5fa2b *R/ptglm.R
 8f44e0b99c9c4155394392077732e409 *R/ptmixed.R
 488328bc2fb04b80df2d69d8b17aef67 *R/ranef.R
-6330c7c5ae3b8bad0765cb608b16db39 *R/simulate_ptglmm.R
+7c3dfacee99c3e94e5d1f24c68d84376 *R/simulate_ptglmm.R
 8694f758daee82a7ab1ff7ca33bb802b *R/starting-values.R
 14e9365da6c568cd680d80d753cbdb12 *R/summary-ptglm.R
 c899ef785389cd5b54ce23ece89d13db *R/summary-ptglmm.R
@@ -22,7 +22,7 @@ df9c5c6110e4e0cf4812851f94ea4d80 *R/wald-test.R
 2efbe6b16392ab8fb4c6964494c7949f *build/vignette.rds
 0475f3f39aa521246f189007f92bf778 *data/df1.RData
 e760c091c4e5ae015aa0183a28731e6f *inst/CITATION
-6fec45cdd96d65dd1f08b7402d172fbc *inst/NEWS.md
+f61e814082795dc2659728c8acff461c *inst/NEWS.md
 954e77f978b7d2486c0593501d5357b1 *inst/doc/Overview_functionalities_ptmixed.Rmd
 98a4f04f1c83484b772bd92ff73db56d *inst/doc/Overview_functionalities_ptmixed.html
 4d75321179965fa689206154c0d2fcbe *man/df1.Rd

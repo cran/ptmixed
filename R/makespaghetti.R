@@ -72,7 +72,7 @@ make.spaghetti = function(x, y, id, group = NULL, data,
   x = data[ , deparse(substitute(x))]
   y = data[ , deparse(substitute(y))]
   id = data[ , deparse(substitute(id))]
-  if (is.null(ylim)) ylim = range(y)
+  if (is.null(ylim)) ylim = range(y, na.rm = T)
   if (length(ylim) !=2) warning('ylim should be a vector of length 2')
   check = missing(group)
   if (check) group = NULL
