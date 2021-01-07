@@ -7,16 +7,16 @@
 ranef(obj)
 }
 \arguments{
-\item{obj}{an object of class \code{ptglmm} (obtained from
+\item{obj}{an object of class \code{ptglmm} (obtained from 
 \code{ptmixed} or \code{nbmixed} ).}
 }
 \value{
 A vector with the EB estimates of the random effects
 }
 \description{
-Compute the BLUP (best linear unbiased predictor) of the random
-effects for the Poisson-Tweedie and negative binomial generalized
-linear mixed models (fitted through \code{ptmixed} and
+Compute the BLUP (best linear unbiased predictor) of the random  
+effects for the Poisson-Tweedie and negative binomial generalized 
+linear mixed models (fitted through \code{ptmixed} and 
 \code{nbmixed} respectively)
 }
 \examples{
@@ -35,7 +35,7 @@ ranef(obj = fit0)
 }
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

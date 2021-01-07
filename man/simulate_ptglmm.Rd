@@ -4,16 +4,8 @@
 \alias{simulate_ptglmm}
 \title{Simulate data from the Poisson-Tweedie generalized linear mixed model}
 \usage{
-simulate_ptglmm(
-  n = 20,
-  t = 5,
-  seed = 1,
-  beta = c(3, 0, 0, 0.4),
-  D = 1.5,
-  a = -1,
-  sigma2 = 0.8^2,
-  offset = F
-)
+simulate_ptglmm(n = 20, t = 5, seed = 1, beta = c(3, 0, 0, 0.4),
+  D = 1.5, a = -1, sigma2 = 0.8^2, offset = F)
 }
 \arguments{
 \item{n}{number of subjects}
@@ -35,7 +27,7 @@ this order: intercept, group main effect, time main effect, group*time interacti
 }
 \value{
 A list containing the following elements: a dataframe (\code{data})
-containing the response y, the subject id, the group indicator and time;
+containing the response y, the subject id, the group indicator and time; 
 a vector with the true random intercept values (\code{true.randint}).
 }
 \description{
@@ -43,7 +35,7 @@ Simulates a dataset comprising t repeated measurements for n subjects
 from a Poisson-Tweedie GLMM. Subjects are assumed to belong to two
 different groups. The linear predictor comprises an intercept,
 main effects of group and of time, and the interaction between time and
-group; a random intercept; and, optionally, a normally-distributed
+group; a random intercept; and, optionally, a normally-distributed 
 offset term.
 }
 \examples{
@@ -61,7 +53,7 @@ make.spaghetti(x = time, y = y, id = id,
 group = group, data = example2$data)
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

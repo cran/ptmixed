@@ -7,7 +7,7 @@
 \method{summary}{ptglmm}(object, wald = T, silent = F, ...)
 }
 \arguments{
-\item{object}{an object of class \code{ptglmm} (obtained
+\item{object}{an object of class \code{ptglmm} (obtained 
 from \code{ptmixed} or \code{nbmixed}).}
 
 \item{wald}{logical. If \code{TRUE}, standard errors and univariate Wald test are computed. Default is \code{TRUE}.}
@@ -19,17 +19,17 @@ tests is not printed on screen. Default is \code{FALSE} (info is printed)}
 }
 \value{
 A list with the following elements: value of the loglikelihood at the MLE (\code{logl}),
-table with maximum likelihood estimates of the regression coefficients, SEs and Wald tests \code{coefficients},
+table with maximum likelihood estimates of the regression coefficients, SEs and Wald tests \code{coefficients}, 
 and maximum likelihood estimates of the other parameters (\code{D}, \code{a} and \code{sigma2})
 }
 \description{
 Provides parameter estimates, standard errors and univariate Wald test
 for the Poisson-Tweedie and negative binomial generalized
-linear mixed models (fitted through \code{ptmixed} and
+linear mixed models (fitted through \code{ptmixed} and 
 \code{nbmixed} respectively)
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

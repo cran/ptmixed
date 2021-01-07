@@ -65,6 +65,9 @@ make.spaghetti = function(x, y, id, group = NULL, data,
                       cex.lab = 1, cex.leg = 1,
                       margins = NULL,
                       legend.inset = -0.3, legend.space = 1) {
+  # get initial par() settings to restore at the end:
+  par.init = par()
+  
   if (is.na(xlab)) xlab = deparse(substitute(x))
   if (is.na(ylab)) ylab = deparse(substitute(y))
   sort.x = order(data[ , deparse(substitute(x))])
@@ -123,5 +126,8 @@ make.spaghetti = function(x, y, id, group = NULL, data,
            y.intersp = legend.space,
            col = palette, bty = 'n', cex = cex.leg)
   }
+  
+  # restore par values as they were
+  par(bty = par.init$bty, xpd = par.init$xpd, mar = par.init$mar)
 }
 

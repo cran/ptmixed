@@ -7,8 +7,8 @@
 wald.test(obj, L, k = NULL)
 }
 \arguments{
-\item{obj}{an object of class \code{ptglmm} (obtained from
-\code{ptmixed} or \code{nbmixed}) or \code{ptglm} (obtained from
+\item{obj}{an object of class \code{ptglmm} (obtained from 
+\code{ptmixed} or \code{nbmixed}) or \code{ptglm} (obtained from 
 \code{ptglm} or \code{nbglm})}
 
 \item{L}{a matrix used to define the hypothesis to test,
@@ -22,7 +22,7 @@ A data frame with the result of the test
 }
 \description{
 Compute a multivariate Wald test for one of the following
-models: Poisson-Tweedie GLMM, negative binomial GLMM,
+models: Poisson-Tweedie GLMM, negative binomial GLMM, 
 Poisson-Tweedie GLM, negative binomial GLM. The null
 hypothesis has to be specified in the (matrix) form
 $L b = k$, where $b$ is the vector of regression coefficients
@@ -48,7 +48,7 @@ wald.test(obj = fit1, L = L, k = NULL)
 }
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

@@ -7,7 +7,7 @@
 \method{summary}{ptglm}(object, silent = F, ...)
 }
 \arguments{
-\item{object}{an object of class \code{ptglm}
+\item{object}{an object of class \code{ptglm} 
 (obtained from \code{ptglm} or \code{nbglm}).
 #' @param silent logical. If \code{TRUE}, information on parameter estimates and
 tests is not printed on screen. Default is \code{FALSE} (info is printed)}
@@ -18,7 +18,7 @@ tests is not printed on screen. Default is \code{FALSE} (info is printed)}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-A list with the following elements: \code{logl}, \code{coefficients},
+A list with the following elements: \code{logl}, \code{coefficients}, 
 \code{D}, \code{a}
 }
 \description{
@@ -27,7 +27,7 @@ for the Poisson-Tweedie and the negative binomial generalized linear models
 (fitted through \code{ptglm} and \code{nbglm} respectively)
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

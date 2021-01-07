@@ -4,20 +4,8 @@
 \alias{loglik.pt.1re}
 \title{Loglikelihood of Poisson-Tweedie generalized linear mixed model with random intercept}
 \usage{
-loglik.pt.1re(
-  beta,
-  D,
-  a,
-  Sigma,
-  y,
-  X,
-  Z,
-  id,
-  offset = NULL,
-  GHk = 5,
-  tol = 9.88131291682493e-324,
-  GHs = NULL
-)
+loglik.pt.1re(beta, D, a, Sigma, y, X, Z, id, offset = NULL, GHk = 5,
+  tol = 9.88131291682493e-324, GHs = NULL)
 }
 \arguments{
 \item{beta}{Vector of regression coefficients}
@@ -42,7 +30,7 @@ loglik.pt.1re(
 
 \item{tol}{Tolerance value for the evaluation of the probability mass function of the Poisson-Tweedie distribution}
 
-\item{GHs}{Quadrature points at which to evaluate the loglikelihood. If \code{NULL} (default value),
+\item{GHs}{Quadrature points at which to evaluate the loglikelihood. If \code{NULL} (default value), 
 the GH quadrature points are computed internally}
 }
 \value{
@@ -50,11 +38,11 @@ The loglikelihood value obtained using a Gauss-Hermite quadrature
 approximation with \code{GHk} quadrature points.
 }
 \description{
-Evaluates the loglikelihood of a Poisson-Tweedie generalized linear mixed model
+Evaluates the loglikelihood of a Poisson-Tweedie generalized linear mixed model 
 with random intercept, using the adaptive Gauss-Hermite quadrature rule.
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

@@ -4,23 +4,14 @@
 \alias{pmf}
 \title{Probability mass function plot for a discrete variable}
 \usage{
-pmf(
-  x,
-  absolute = T,
-  xlim = NULL,
-  lwd = 1,
-  col = "black",
-  title = NULL,
-  xlab = NULL,
-  bty = "l",
-  cex.title = NULL,
-  cex.axis = NULL
-)
+pmf(x, absolute = T, xlim = NULL, lwd = 1, col = "black",
+  title = NULL, xlab = NULL, bty = "l", cex.title = NULL,
+  cex.axis = NULL)
 }
 \arguments{
 \item{x}{the (discrete) variable of interest}
 
-\item{absolute}{logical. If \code{TRUE} (default) absolute frequencies
+\item{absolute}{logical. If \code{TRUE} (default) absolute frequencies 
 are plotted, if \code{FALSE} relative frequencies}
 
 \item{xlim}{limits for the x axis}
@@ -49,7 +40,7 @@ pmf(cars$speed, absolute = FALSE)
 pmf(cars$speed, lwd = 2, col = 'blue')
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

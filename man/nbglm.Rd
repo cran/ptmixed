@@ -4,14 +4,8 @@
 \alias{nbglm}
 \title{Negative binomial generalized linear model}
 \usage{
-nbglm(
-  formula,
-  offset = NULL,
-  data,
-  maxit = c(500, 1e+05),
-  trace = T,
-  theta.start = NULL
-)
+nbglm(formula, offset = NULL, data, maxit = c(500, 1e+05), trace = T,
+  theta.start = NULL)
 }
 \arguments{
 \item{formula}{A formula for the fixed effects part of the model. It should be in the form \code{y ~ x1 + x2}}
@@ -29,7 +23,7 @@ the BFGS method and, if this fails, by the Nelder-Mead method}
 vector of regression coefficients and the dispersion parameter}
 }
 \value{
-A list containing the following elements: function's call (\code{call});
+A list containing the following elements: function's call (\code{call}); 
 maximum likelihood estimate (\code{mle});  value of the
 loglikelihood at the mle (\code{logl}); \code{convergence} value (if 0, the optimization converged);
 the observed Fisher information (\code{fisher.info}) and the starting values
@@ -52,7 +46,7 @@ fit1 = nbglm(formula = y ~ group*time, data = df1)
 summary(fit1)
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

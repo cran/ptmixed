@@ -4,29 +4,11 @@
 \alias{make.spaghetti}
 \title{Generate a spaghetti plot to visualize longitudinal data}
 \usage{
-make.spaghetti(
-  x,
-  y,
-  id,
-  group = NULL,
-  data,
-  col = NULL,
-  pch = 16,
-  lty = 1,
-  lwd = 1,
-  title = "",
-  xlab = NA,
-  ylab = NA,
-  legend.title = "",
-  ylim = NULL,
-  cex.axis = 1,
-  cex.title = 1,
-  cex.lab = 1,
-  cex.leg = 1,
-  margins = NULL,
-  legend.inset = -0.3,
-  legend.space = 1
-)
+make.spaghetti(x, y, id, group = NULL, data, col = NULL, pch = 16,
+  lty = 1, lwd = 1, title = "", xlab = NA, ylab = NA,
+  legend.title = "", ylim = NULL, cex.axis = 1, cex.title = 1,
+  cex.lab = 1, cex.leg = 1, margins = NULL, legend.inset = -0.3,
+  legend.space = 1)
 }
 \arguments{
 \item{x}{the time variable (numeric vector)}
@@ -35,7 +17,7 @@ make.spaghetti(
 
 \item{id}{the subject indicator}
 
-\item{group}{the group that each subject belongs to (optional,
+\item{group}{the group that each subject belongs to (optional, 
 do not specify if not relevant)}
 
 \item{data}{a data frame containing x, y, id and optionally group}
@@ -66,7 +48,7 @@ do not specify if not relevant)}
 
 \item{cex.leg}{font size for the legend}
 
-\item{margins}{use this argument if you want to overwrite the default
+\item{margins}{use this argument if you want to overwrite the default 
 function margins}
 
 \item{legend.inset}{moves legend more to the left / right (default is -0.3)}
@@ -75,7 +57,7 @@ function margins}
 }
 \description{
 A spaghetti plot, or trajectory plot, is a plot that allows
-to compare across individuals or groups the trajectories
+to compare across individuals or groups the trajectories 
 of a longitudinal outcome
 }
 \examples{
@@ -102,7 +84,7 @@ data = data.long, title = 'spaghetti plot')
 }
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie
+Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
 data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
 }

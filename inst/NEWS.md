@@ -18,10 +18,20 @@ Each subsection corresponds to a specific package version.
 1.0.x
 =====
 
+ptmixed 1.0.2
+-------------
+
+-   Released: January 2021
+-   Updated vignette
+-   Changed displaying style for function arguments in the documentation
+-   Corrected BibTeX formatting of author names in CITATION file
+-   Added to `make.spaghetti()` code to restore `bty`, `mar` and `xpd`
+    values as they were before the function call
+
 ptmixed 1.0.1
 -------------
 
--   Released: October2020
+-   Released: October 2020
 -   Updated URL in DESCRIPTION file
 -   Added `na.rm = T` in computation of `ylim` within `make.spaghetti()`
 -   Added warnings in `simulate_ptglmm`

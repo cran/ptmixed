@@ -32,6 +32,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
@@ -121,6 +130,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -350,7 +360,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Introduction</h1>
 <div id="whats-ptmixed" class="section level2">
 <h2>What’s ptmixed?</h2>
-<p><code>ptmixed</code> is an <code>R</code> package that has been created to estimate the Poisson-Tweedie mixed effects model proposed by Signorelli, Spitali and Tsonaka (2020). <em>Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data</em>. Statistical Modelling, DOI: <a href="https://doi.org/10.1177/1471082X20936017">(10.1177/1471082X20936017)</a>. The Poisson-Tweedie mixed effects model is a generalized linear mixed model (GLMM) for count data that encompasses the negative binomial and Poisson GLMMs as special cases. It is particularly suitable for the analysis of overdispersed count data, because it allows to model overdispersion, zero-inflation and heavy-tails more flexibly than the negative binomial GLMM.</p>
+<p><code>ptmixed</code> is an <code>R</code> package that has been created to estimate the <strong>Poisson-Tweedie mixed effects model</strong> proposed in the following article:</p>
+<p>Signorelli, Spitali and Tsonaka (2020). <em>Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data</em>. Statistical Modelling, DOI: <a href="https://doi.org/10.1177/1471082X20936017">(10.1177/1471082X20936017)</a>.</p>
+<p>The Poisson-Tweedie mixed effects model is a generalized linear mixed model (GLMM) for count data that encompasses the negative binomial and Poisson GLMMs as special cases. It is particularly <strong>suitable for the analysis of overdispersed count data</strong>, because it allows to model <strong>overdispersion</strong>, <strong>zero-inflation</strong> and <strong>heavy-tails</strong> more flexibly than the negative binomial GLMM.</p>
 <p>The package comprises not only functions for the estimation of the Poisson-Tweedie mixed model, but also functions for the estimation of the negative binomial and Poisson-Tweedie GLMs and of the negative binomial GLMM, alongside with some (simple) data visualization functions.</p>
 </div>
 <div id="get-started" class="section level2">
@@ -378,7 +390,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>In this section I am going to present a step by step example whose aim is to show how the <code>R</code> package <code>ptmixed</code> can be used to estimate the Poisson-Tweedie GLMM, as well as a few simpler models.</p>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
-<p>All functions in the package assume that data are in the so-called ‘’long format’’. Let’s generate an example dataset (already in long format) using the function <code>simulate_ptglmm</code>:</p>
+<p>All functions in the package assume that data are in the so-called “<a href="https://www.theanalysisfactor.com/wide-and-long-data">long format</a>”. Let’s generate an example dataset (already in long format) using the function <code>simulate_ptglmm</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>example.df =<span class="st"> </span><span class="kw">simulate_ptglmm</span>(<span class="dt">n =</span> <span class="dv">14</span>, <span class="dt">t =</span> <span class="dv">4</span>, <span class="dt">seed =</span> <span class="dv">1234</span>,</span>
 <span id="cb3-2"><a href="#cb3-2"></a>                             <span class="dt">beta =</span> <span class="kw">c</span>(<span class="fl">2.3</span>, <span class="fl">-0.9</span>, <span class="fl">-0.2</span>, <span class="fl">0.5</span>),</span>
 <span id="cb3-3"><a href="#cb3-3"></a>                             <span class="dt">D =</span> <span class="fl">1.5</span>, <span class="dt">a =</span> <span class="dv">-1</span>,</span>
@@ -409,7 +421,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="the-poisson-tweedie-generalized-linear-mixed-model" class="section level2">
 <h2>The Poisson-Tweedie generalized linear mixed model</h2>
-<p>The most important function of the package, <code>ptmixed</code>, is a function that makes it possible to carry out maximum likelihood (ML) estimation of the Poisson-Tweedie GLMM. This function employs the adaptive Gauss-Hermite quadrature (AGHQ) method to evaluate the marginal likelihood of the GLMM, and then maximizes this likelihood using the Nelder-Mead and BFGS methods. Finally, if <code>hessian = T</code> (default value) a numerical evaluation of the hessian matrix (needed to compute the standard errors associated to the parameter estimates) in correspondance of the ML estimate is performed.</p>
+<p>The most important function of the package, <code>ptmixed</code>, is a function that makes it possible to carry out <strong>maximum likelihood (ML) estimation</strong> of the Poisson-Tweedie GLMM. This function employs the adaptive Gauss-Hermite quadrature (AGHQ) method to evaluate the marginal likelihood of the GLMM, and then maximizes this likelihood using the Nelder-Mead and BFGS methods. Finally, if <code>hessian = T</code> (default value) a numerical evaluation of the hessian matrix (needed to compute the standard errors associated to the parameter estimates) in correspondance of the ML estimate is performed.</p>
 <div id="model-estimation" class="section level3">
 <h3>Model Estimation</h3>
 <p>Estimation of the Poisson-Tweedie GLMM can be carried out using <code>ptmixed</code>:</p>
@@ -419,7 +431,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>## Loading required namespace: GLMMadaptive</code></pre>
 <pre><code>## Loading required namespace: moments</code></pre>
 <pre><code>## Loading required namespace: lme4</code></pre>
-<pre><code>## Loading required namespace: mvtnorm</code></pre>
 <pre><code>## 
 ## 
 ## Total number of NM iterations = 570
@@ -442,7 +453,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="viewing-parameter-estimates-standard-errors-and-p-values" class="section level3">
 <h3>Viewing parameter estimates, standard errors and p-values</h3>
 <p>The results of the fitted model can be viewed using</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">summary</span>(pt_glmm)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">summary</span>(pt_glmm)</span></code></pre></div>
 <pre><code>## Loading required namespace: matrixcalc</code></pre>
 <pre><code>## Loglikelihood: -140.623 
 ## Parameter estimates:
@@ -461,37 +472,37 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3>Testing more complex hypotheses</h3>
 <p>More complex hypotheses can be tested using the multivariate Wald test or, when possible, the likelihood ratio test.</p>
 <p>For example, one may want to test the null hypothesis that there are no differences between the two groups, that is to say that the regression coefficients of <code>group</code> and <code>group:time</code> are both = 0.</p>
-<p>To test this hypothesis with the multivariate Wald test, we first need to specify it in the form <span class="math inline">\(L \beta = 0\)</span>, where <span class="math inline">\(L\)</span> is specified as follows:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>L.group =<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">4</span>)</span>
-<span id="cb19-2"><a href="#cb19-2"></a>L.group[<span class="dv">1</span>, <span class="dv">2</span>] =<span class="st"> </span>L.group[<span class="dv">2</span>, <span class="dv">4</span>] =<span class="st"> </span><span class="dv">1</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a>L.group</span></code></pre></div>
+<p>To test this hypothesis with the <strong>multivariate Wald test</strong>, we first need to specify it in the form <span class="math inline">\(L \beta = 0\)</span>, where <span class="math inline">\(L\)</span> is specified as follows:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>L.group =<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">4</span>)</span>
+<span id="cb18-2"><a href="#cb18-2"></a>L.group[<span class="dv">1</span>, <span class="dv">2</span>] =<span class="st"> </span>L.group[<span class="dv">2</span>, <span class="dv">4</span>] =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>L.group</span></code></pre></div>
 <pre><code>##      [,1] [,2] [,3] [,4]
 ## [1,]    0    1    0    0
 ## [2,]    0    0    0    1</code></pre>
 <p>Then, we can proceed with computing the multivariate Wald test:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">wald.test</span>(pt_glmm, <span class="dt">L =</span> L.group, <span class="dt">k =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">wald.test</span>(pt_glmm, <span class="dt">L =</span> L.group, <span class="dt">k =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>))</span></code></pre></div>
 <pre><code>## Loading required namespace: aod</code></pre>
 <pre><code>##       chi2 df            P
 ## 1 14.22634  2 0.0008143085</code></pre>
-<p>Alternatively, the same hypothesis can be tested using the likelihood ratio test (LRT). To do so, you first need to estimate the model under the null hypothesis (note that for the purpose of this computation, evaluating the hessian matrix is not necessary and it can be skypped):</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>null_model =<span class="st"> </span><span class="kw">ptmixed</span>(<span class="dt">fixef.formula =</span> y <span class="op">~</span><span class="st"> </span>time, <span class="dt">id =</span> id,</span>
-<span id="cb24-2"><a href="#cb24-2"></a>                               <span class="dt">data =</span> data.long, <span class="dt">npoints =</span> <span class="dv">3</span>, </span>
-<span id="cb24-3"><a href="#cb24-3"></a>                               <span class="dt">hessian =</span> F, <span class="dt">trace =</span> F)</span></code></pre></div>
+<p>Alternatively, the same hypothesis can be tested using the <strong>likelihood ratio test</strong> (LRT). To do so, you first need to estimate the model under the null hypothesis (note that for the purpose of this computation, evaluating the hessian matrix is not necessary, so we can avoid to compute it by setting <code>hessian = F</code>):</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>null_model =<span class="st"> </span><span class="kw">ptmixed</span>(<span class="dt">fixef.formula =</span> y <span class="op">~</span><span class="st"> </span>time, <span class="dt">id =</span> id,</span>
+<span id="cb23-2"><a href="#cb23-2"></a>                               <span class="dt">data =</span> data.long, <span class="dt">npoints =</span> <span class="dv">3</span>, </span>
+<span id="cb23-3"><a href="#cb23-3"></a>                               <span class="dt">hessian =</span> F, <span class="dt">trace =</span> F)</span></code></pre></div>
 <pre><code>## 
 ## 
 ## Total number of NM iterations = 398</code></pre>
 <p>Then, we can proceed to compare the null and alternative model by computing the LRT test statistic, whose asymptotic distribution is in this case a chi-squared with two degrees of freedom, and the corresponding p-value:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>lrt.stat =<span class="st"> </span><span class="dv">2</span><span class="op">*</span>(pt_glmm<span class="op">$</span>logl <span class="op">-</span><span class="st"> </span>null_model<span class="op">$</span>logl)</span>
-<span id="cb26-2"><a href="#cb26-2"></a>lrt.stat</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>lrt.stat =<span class="st"> </span><span class="dv">2</span><span class="op">*</span>(pt_glmm<span class="op">$</span>logl <span class="op">-</span><span class="st"> </span>null_model<span class="op">$</span>logl)</span>
+<span id="cb25-2"><a href="#cb25-2"></a>lrt.stat</span></code></pre></div>
 <pre><code>## [1] 14.17753</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>p.lrt =<span class="st"> </span><span class="kw">pchisq</span>(lrt.stat, <span class="dt">df =</span> <span class="dv">2</span>, <span class="dt">lower.tail =</span> F)</span>
-<span id="cb28-2"><a href="#cb28-2"></a>p.lrt</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>p.lrt =<span class="st"> </span><span class="kw">pchisq</span>(lrt.stat, <span class="dt">df =</span> <span class="dv">2</span>, <span class="dt">lower.tail =</span> F)</span>
+<span id="cb27-2"><a href="#cb27-2"></a>p.lrt</span></code></pre></div>
 <pre><code>## [1] 0.0008344269</code></pre>
 </div>
 <div id="computing-the-predicted-random-effects" class="section level3">
 <h3>Computing the predicted random effects</h3>
-<p>To computate the predicted random effects, simply use</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="kw">ranef</span>(pt_glmm)</span></code></pre></div>
+<p>To computate the <strong>predicted random effects</strong>, simply use</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">ranef</span>(pt_glmm)</span></code></pre></div>
 <pre><code>##           1           2           3           4           5           6 
 ## -0.74838728  0.31472249  1.13391844 -1.17000951  0.49289844  0.40439346 
 ##           7           8           9          10          11          12 
@@ -511,15 +522,15 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>For this reason, the package also offers the possibility to estimate these simpler models, as illustrated below.</p>
 <div id="negative-binomial-generalized-linear-mixed-model" class="section level3">
 <h3>Negative binomial generalized linear mixed model</h3>
-<p>The syntax to estimate the negative binomial GLMM is the same as that used for the Poisson-Tweedie GLMM. Just make sure to replace the function <code>ptmixed</code> with <code>nbmixed</code>:</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>nb_glmm =<span class="st"> </span><span class="kw">nbmixed</span>(<span class="dt">fixef.formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">id =</span> id,</span>
-<span id="cb32-2"><a href="#cb32-2"></a>                     <span class="dt">data =</span> data.long, <span class="dt">npoints =</span> <span class="dv">3</span>, </span>
-<span id="cb32-3"><a href="#cb32-3"></a>                     <span class="dt">hessian =</span> T, <span class="dt">trace =</span> F)</span></code></pre></div>
+<p>The syntax to estimate the <strong>negative binomial GLMM</strong> is the same as that used for the Poisson-Tweedie GLMM. Just make sure to replace the function <code>ptmixed</code> with <code>nbmixed</code>:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>nb_glmm =<span class="st"> </span><span class="kw">nbmixed</span>(<span class="dt">fixef.formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">id =</span> id,</span>
+<span id="cb31-2"><a href="#cb31-2"></a>                     <span class="dt">data =</span> data.long, <span class="dt">npoints =</span> <span class="dv">3</span>, </span>
+<span id="cb31-3"><a href="#cb31-3"></a>                     <span class="dt">hessian =</span> T, <span class="dt">trace =</span> F)</span></code></pre></div>
 <pre><code>## 
 ## Total number of iterations = 362
 ## Convergence reached. Computing hessian...</code></pre>
 <p>To view the model summary and compute the predicted random effects, once again you can use</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a><span class="kw">summary</span>(nb_glmm)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">summary</span>(nb_glmm)</span></code></pre></div>
 <pre><code>## Loglikelihood: -140.623 
 ## Parameter estimates:
 ##             Estimate Std. error       z p.value
@@ -531,7 +542,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## Dispersion = 1.63 
 ## Power = 0 
 ## Variance = 0.41</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a><span class="kw">ranef</span>(nb_glmm)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="kw">ranef</span>(nb_glmm)</span></code></pre></div>
 <pre><code>##           1           2           3           4           5           6 
 ## -0.73856990  0.33249113  1.15104776 -1.16599968  0.51121344  0.42102715 
 ##           7           8           9          10          11          12 
@@ -541,9 +552,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="poisson-tweedie-generalized-linear-model" class="section level3">
 <h3>Poisson-Tweedie generalized linear model</h3>
-<p>Estimation of the Poisson-Tweedie GLM can be done using the <code>ptglm</code> function:</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>pt_glm =<span class="st"> </span><span class="kw">ptglm</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">data =</span> data.long, <span class="dt">trace =</span> F)</span>
-<span id="cb38-2"><a href="#cb38-2"></a><span class="kw">summary</span>(pt_glm)</span></code></pre></div>
+<p>Estimation of the <strong>Poisson-Tweedie GLM</strong> can be done using the <code>ptglm</code> function:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>pt_glm =<span class="st"> </span><span class="kw">ptglm</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">data =</span> data.long, <span class="dt">trace =</span> F)</span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="kw">summary</span>(pt_glm)</span></code></pre></div>
 <pre><code>## Loglikelihood: -152.931 
 ## Parameter estimates:
 ##             Estimate Std. error       z p.value
@@ -557,9 +568,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="negative-binomial-generalized-linear-model" class="section level3">
 <h3>Negative binomial generalized linear model</h3>
-<p>Finally, estimation of the negative binomial GLM can be done using the <code>nbglm</code> function:</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>nb_glm =<span class="st"> </span><span class="kw">nbglm</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">data =</span> data.long, <span class="dt">trace =</span> F)</span>
-<span id="cb40-2"><a href="#cb40-2"></a><span class="kw">summary</span>(nb_glm)</span></code></pre></div>
+<p>Finally, estimation of the <strong>negative binomial GLM</strong> can be done using the <code>nbglm</code> function:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>nb_glm =<span class="st"> </span><span class="kw">nbglm</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>group<span class="op">*</span>time, <span class="dt">data =</span> data.long, <span class="dt">trace =</span> F)</span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="kw">summary</span>(nb_glm)</span></code></pre></div>
 <pre><code>## Loglikelihood: -152.955 
 ## Parameter estimates:
 ##             Estimate Std. error       z p.value
