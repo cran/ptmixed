@@ -344,22 +344,47 @@ ptmixed = function(fixef.formula, id, offset = NULL,
     theta.init = mle$theta.init
   }
   # output list:
+  conv.value = mle$convergence
+  check = .checkmle(mle.est)
+  if (check) {
+    conv.value = 666
+    mess = paste('Convergence problem identified (the solution',
+            'is on the boundary of the parameter space)')
+    warning(mess)
+    warning.list = c(warning.list, mess)
+  }
+  
   if (include.ranef) {
     if (!redo2 & hessian == F) out = list('call' = call,
                                           'mle' = mle.est, 'logl' = logl,
-                                          'convergence' = mle$convergence, 'quad.points' = npoints,
+                                          'convergence' = conv.value, 'quad.points' = npoints,
                                           'theta.init' = theta.init, 'warnings' = warning.list)
     if (!redo2 & hessian) out = list('call' = call,
                                      'mle' = mle.est, 'logl' = logl, 'fisher.info' = hess,
-                                     'convergence' = mle$convergence, 'quad.points' = npoints,
+                                     'convergence' = conv.value, 'quad.points' = npoints,
                                      'theta.init' = theta.init, 'warnings' = warning.list)
   }
   if (!include.ranef) {
     out = list('call' = call,
                'mle' = mle.est, 'logl' = logl, 'fisher.info' = mle$fisher.info,
-               'convergence' = mle$convergence, 'quad.points' = NA,
+               'convergence' = conv.value, 'quad.points' = NA,
                'theta.init' = mle$theta.init, 'warnings' = warning.list)
   }
   class(out)=c('ptglmm', 'list')
   return(out)
+}
+
+.checkmle = function(mle) {
+  conv.problem = F
+  a = mle['a']
+  D = mle['D']
+  sigma2 = mle['sigma2']
+  if (a == 1) {
+    check1 = (D > 100)
+    check2 = (sigma2 > 100)
+    if (check1 | check2) {
+      conv.problem = T
+    }
+  }
+  return(conv.problem)
 }

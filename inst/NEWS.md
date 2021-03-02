@@ -18,6 +18,13 @@ Each subsection corresponds to a specific package version.
 1.0.x
 =====
 
+ptmixed 1.0.3
+-------------
+
+-   Released: February 2021
+-   Added `.checkmle()` step in `ptmixed()` to flag as not converged
+    problematic cases on the boundary of the parameter space
+
 ptmixed 1.0.2
 -------------
 

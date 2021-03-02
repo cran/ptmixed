@@ -1,4 +1,4 @@
-5e796175ada8d40fff9d5e73364a0cc4 *DESCRIPTION
+89972f4fb62504a8ebfab5b30566c463 *DESCRIPTION
 f869a7da8288db3b8507afa5c5fa0e62 *NAMESPACE
 a4ae0e283e62454b511770733758b27b *R/GHpoints.R
 a29da63e9edae872344bac6e802edc7c *R/PTfunctions.R
@@ -12,7 +12,7 @@ f86a31a338cfe2275af3864974c6a297 *R/loglik.R
 89e4c722ec45e341988f08edb43064ea *R/nbmixed.R
 25c90c27654e15bf3bf840087e7d403e *R/pmf.R
 fdcdcd12d43eae4184079845abf5fa2b *R/ptglm.R
-8f44e0b99c9c4155394392077732e409 *R/ptmixed.R
+32939691cd257fd8dd1d4479b3f86610 *R/ptmixed.R
 488328bc2fb04b80df2d69d8b17aef67 *R/ranef.R
 7c3dfacee99c3e94e5d1f24c68d84376 *R/simulate_ptglmm.R
 8694f758daee82a7ab1ff7ca33bb802b *R/starting-values.R
@@ -22,7 +22,7 @@ df9c5c6110e4e0cf4812851f94ea4d80 *R/wald-test.R
 2efbe6b16392ab8fb4c6964494c7949f *build/vignette.rds
 0475f3f39aa521246f189007f92bf778 *data/df1.RData
 d34faf3164cabfd441b43d631b96af0e *inst/CITATION
-1b372978fbc9ce1a4da0c6a8edd6b86b *inst/NEWS.md
+d5887d3236096bbee45d8f81f86a0b68 *inst/NEWS.md
 273371f8468d8eaf7e688b55b5bd1f34 *inst/doc/Overview_functionalities_ptmixed.Rmd
 28e23b5e4f02d1649f9e62cc22130abc *inst/doc/Overview_functionalities_ptmixed.html
 e93e0d95700e8f97711535e52d8abd02 *man/df1.Rd
