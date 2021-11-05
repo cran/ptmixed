@@ -19,9 +19,9 @@
 #' approximation with \code{GHk} quadrature points.
 #' @export
 #' @author Mirko Signorelli
-#' @references Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
+#' @references Signorelli, M., Spitali, P., Tsonaka, R. (2021). Poisson-Tweedie 
 #' mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
-#' data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
+#' data. Statistical Modelling, 21 (6), 520-545. URL: https://doi.org/10.1177/1471082X20936017
 #' @seealso \code{\link{ptmixed}} and the examples therein
 
 loglik.pt.1re = function(beta, D, a, Sigma, y, X, Z, id, offset = NULL, 

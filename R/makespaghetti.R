@@ -30,9 +30,9 @@
 #' @import graphics
 #' @export
 #' @author Mirko Signorelli
-#' @references Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
+#' @references Signorelli, M., Spitali, P., Tsonaka, R. (2021). Poisson-Tweedie 
 #' mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
-#' data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
+#' data. Statistical Modelling, 21 (6), 520-545. URL: https://doi.org/10.1177/1471082X20936017
 #' @examples
 #' \donttest{
 #' # generate example data
@@ -72,6 +72,13 @@ make.spaghetti = function(x, y, id, group = NULL, data,
   if (is.na(ylab)) ylab = deparse(substitute(y))
   sort.x = order(data[ , deparse(substitute(x))])
   data = data[sort.x, ]
+  # check NAs on X and Y:
+  na.x = which(is.na(data[ , deparse(substitute(x))]))
+  na.y = which(is.na(data[ , deparse(substitute(y))]))
+  na.either = union(na.x, na.y)
+  if (length(na.either) > 0) {
+    data = data[-na.either, ]
+  }
   x = data[ , deparse(substitute(x))]
   y = data[ , deparse(substitute(y))]
   id = data[ , deparse(substitute(id))]

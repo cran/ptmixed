@@ -7,13 +7,16 @@ citEntry(
                    as.person("Spitali, P."),
                    as.person("Tsonaka, R.")),
   journal  = "Statistical Modelling",
-  year     = "2020",
+  volume = "21",
+  number = "6",
+  pages = "520--545",
+  year     = "2021",
   url      = "https://doi.org/10.1177/1471082X20936017",
   textVersion = paste(
-	"Signorelli, M., Spitali, P., Tsonaka, R. (2020).",
-        "Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data",
-        "Statistical Modelling",
-        "URL https://doi.org/10.1177/1471082X20936017",
-		"DOI 10.1177/1471082X20936017"
+	"Signorelli, M., Spitali, P., Tsonaka, R. (2021).",
+        "Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data.",
+        "Statistical Modelling, 21 (6), 520-545.",
+        "URL: https://doi.org/10.1177/1471082X20936017,",
+		"DOI: 10.1177/1471082X20936017"
   )
 )

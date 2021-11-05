@@ -361,7 +361,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="whats-ptmixed" class="section level2">
 <h2>What’s ptmixed?</h2>
 <p><code>ptmixed</code> is an <code>R</code> package that has been created to estimate the <strong>Poisson-Tweedie mixed effects model</strong> proposed in the following article:</p>
-<p>Signorelli, Spitali and Tsonaka (2020). <em>Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data</em>. Statistical Modelling, DOI: <a href="https://doi.org/10.1177/1471082X20936017">(10.1177/1471082X20936017)</a>.</p>
+<p>Signorelli, Spitali and Tsonaka (2021). <em>Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data</em>. Statistical Modelling, 21 (6), 520-545; DOI: <a href="https://journals.sagepub.com/doi/pdf/10.1177/1471082X20936017">10.1177/1471082X20936017</a>.</p>
 <p>The Poisson-Tweedie mixed effects model is a generalized linear mixed model (GLMM) for count data that encompasses the negative binomial and Poisson GLMMs as special cases. It is particularly <strong>suitable for the analysis of overdispersed count data</strong>, because it allows to model <strong>overdispersion</strong>, <strong>zero-inflation</strong> and <strong>heavy-tails</strong> more flexibly than the negative binomial GLMM.</p>
 <p>The package comprises not only functions for the estimation of the Poisson-Tweedie mixed model, but also functions for the estimation of the negative binomial and Poisson-Tweedie GLMs and of the negative binomial GLMM, alongside with some (simple) data visualization functions.</p>
 </div>
@@ -390,7 +390,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>In this section I am going to present a step by step example whose aim is to show how the <code>R</code> package <code>ptmixed</code> can be used to estimate the Poisson-Tweedie GLMM, as well as a few simpler models.</p>
 <div id="data-preparation" class="section level2">
 <h2>Data preparation</h2>
-<p>All functions in the package assume that data are in the so-called “<a href="https://www.theanalysisfactor.com/wide-and-long-data">long format</a>”. Let’s generate an example dataset (already in long format) using the function <code>simulate_ptglmm</code>:</p>
+<p>All functions in the package assume that data are in the so-called “<a href="https://www.theanalysisfactor.com/wide-and-long-data/">long format</a>”. Let’s generate an example dataset (already in long format) using the function <code>simulate_ptglmm</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>example.df =<span class="st"> </span><span class="kw">simulate_ptglmm</span>(<span class="dt">n =</span> <span class="dv">14</span>, <span class="dt">t =</span> <span class="dv">4</span>, <span class="dt">seed =</span> <span class="dv">1234</span>,</span>
 <span id="cb3-2"><a href="#cb3-2"></a>                             <span class="dt">beta =</span> <span class="kw">c</span>(<span class="fl">2.3</span>, <span class="fl">-0.9</span>, <span class="fl">-0.2</span>, <span class="fl">0.5</span>),</span>
 <span id="cb3-3"><a href="#cb3-3"></a>                             <span class="dt">D =</span> <span class="fl">1.5</span>, <span class="dt">a =</span> <span class="dv">-1</span>,</span>
@@ -588,7 +588,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1>Further details and material</h1>
 <p>The aim of this vignette is to provide a quick-start introduction to the <code>R</code> package <code>ptmixed</code>. Here I have focused my attention on the fundamental aspects that one needs to use the package.</p>
 <p>Further details, functions and examples can be found in <a href="https://CRAN.R-project.org/package=ptmixed/ptmixed.pdf">the manual of the package</a>.</p>
-<p>The description of the method is available in an article <a href="https://doi.org/10.1177/1471082X20936017">that you can read here</a>.</p>
+<p>The description of the method is available in an article <a href="https://journals.sagepub.com/doi/pdf/10.1177/1471082X20936017">that you can read here</a>.</p>
 </div>
 
 

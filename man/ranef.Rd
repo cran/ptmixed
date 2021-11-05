@@ -35,9 +35,9 @@ ranef(obj = fit0)
 }
 }
 \references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2020). Poisson-Tweedie 
+Signorelli, M., Spitali, P., Tsonaka, R. (2021). Poisson-Tweedie 
 mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
-data. Statistical Modelling. URL: https://doi.org/10.1177/1471082X20936017
+data. Statistical Modelling, 21 (6), 520-545. URL: https://doi.org/10.1177/1471082X20936017
 }
 \seealso{
 \code{\link{ptmixed}}, \code{\link{nbmixed}}

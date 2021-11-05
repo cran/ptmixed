@@ -16,7 +16,7 @@ vignette: >
 
 `ptmixed` is an `R` package that has been created to estimate the **Poisson-Tweedie mixed effects model** proposed in the following article:
 
-Signorelli, Spitali and Tsonaka (2020). *Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data*. Statistical Modelling, DOI: [(10.1177/1471082X20936017)](https://doi.org/10.1177/1471082X20936017). 
+Signorelli, Spitali and Tsonaka (2021). *Poisson-Tweedie mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq data*. Statistical Modelling, 21 (6), 520-545; DOI: [10.1177/1471082X20936017](https://journals.sagepub.com/doi/pdf/10.1177/1471082X20936017). 
 
 The Poisson-Tweedie mixed effects model is a generalized linear mixed model (GLMM) for count data that encompasses the negative binomial and Poisson GLMMs as special cases. It is particularly **suitable for the analysis of overdispersed count data**, because it allows to model **overdispersion**, **zero-inflation** and **heavy-tails** more flexibly than the negative binomial GLMM.
 
@@ -53,7 +53,7 @@ In this section I am going to present a step by step example whose aim is to sho
 
 ## Data preparation
 
-All functions in the package assume that data are in the so-called "[long format](https://www.theanalysisfactor.com/wide-and-long-data)". 
+All functions in the package assume that data are in the so-called "[long format](https://www.theanalysisfactor.com/wide-and-long-data/)". 
 Let's generate an example dataset (already in long format) using the function `simulate_ptglmm`:
 
 ```{r, eval=T, echo=T, results='markup'}
@@ -214,4 +214,4 @@ The aim of this vignette is to provide a quick-start introduction to the `R` pac
 
 Further details, functions and examples can be found in [the manual of the package](https://CRAN.R-project.org/package=ptmixed/ptmixed.pdf).
 
-The description of the method is available in an article [that you can read here](https://doi.org/10.1177/1471082X20936017).
+The description of the method is available in an article [that you can read here](https://journals.sagepub.com/doi/pdf/10.1177/1471082X20936017).
