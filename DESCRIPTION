@@ -1,6 +1,6 @@
 Package: ptmixed
 Title: Poisson-Tweedie Generalized Linear Mixed Model
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: 
     c(person(given = "Mirko",
              family = "Signorelli",
@@ -30,11 +30,11 @@ Imports: aod, GLMMadaptive, graphics, lme4, matrixcalc, moments,
         mvtnorm, numDeriv, tweeDEseq
 Suggests: knitr, rmarkdown
 NeedsCompilation: no
-Packaged: 2021-11-05 14:02:06 UTC; msignorelli
+Packaged: 2021-12-01 15:06:01 UTC; msignorelli
 Author: Mirko Signorelli [aut, cre, cph]
     (<https://orcid.org/0000-0002-8102-3356>),
   Pietro Spitali [ctb],
   Roula Tsonaka [ctb]
 Maintainer: Mirko Signorelli <msignorelli.rpackages@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-11-05 14:40:02 UTC
+Date/Publication: 2021-12-01 15:30:02 UTC

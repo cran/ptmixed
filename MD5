@@ -1,4 +1,4 @@
-476fad7478bb6b59a2803bcf7694b297 *DESCRIPTION
+2ce9293e3356190ae51f3d0d7fcaffbe *DESCRIPTION
 f869a7da8288db3b8507afa5c5fa0e62 *NAMESPACE
 a4ae0e283e62454b511770733758b27b *R/GHpoints.R
 a29da63e9edae872344bac6e802edc7c *R/PTfunctions.R
@@ -22,7 +22,7 @@ ce372c0c15839276401bcbe109f71a5f *R/wald-test.R
 2efbe6b16392ab8fb4c6964494c7949f *build/vignette.rds
 0475f3f39aa521246f189007f92bf778 *data/df1.RData
 bb532720230dbb3ba172bfb0a945b7a2 *inst/CITATION
-3637a19cfdf347fb579f35506b65453d *inst/NEWS.Rmd
+8b1ac350ef0737f7b497f270f4f8d8af *inst/NEWS.md
 fd2e57dcec9ce8210a42b1bbd92d7295 *inst/doc/Overview_functionalities_ptmixed.Rmd
 592102884fd7b8ba7862c0147991d4ed *inst/doc/Overview_functionalities_ptmixed.html
 70185f27d044d7c4585d07ea469325bf *man/df1.Rd
