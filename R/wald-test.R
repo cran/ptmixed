@@ -40,7 +40,6 @@
 #' }
 
 wald.test = function (obj, L, k = NULL) {
-  requireNamespace('aod')
   requireNamespace('matrixcalc')
   mle = obj$mle
   if (inherits(obj, 'ptglmm')) p = length(mle) - 3
@@ -68,7 +67,7 @@ wald.test = function (obj, L, k = NULL) {
     }
     else stop('Fisher information matrix is not positive definite. Standard errors cannot be computed.')
   }
-  test = aod::wald.test(b = beta.hat, Sigma = var.beta,
+  test = wald_aod(b = beta.hat, Sigma = var.beta,
                         L = L, H0 = k)
   out = as.data.frame(t(test$result$chi2))
   return(out)
