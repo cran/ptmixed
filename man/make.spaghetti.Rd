@@ -6,9 +6,9 @@
 \usage{
 make.spaghetti(x, y, id, group = NULL, data, col = NULL, pch = 16,
   lty = 1, lwd = 1, title = "", xlab = NA, ylab = NA,
-  legend.title = "", ylim = NULL, cex.axis = 1, cex.title = 1,
-  cex.lab = 1, cex.leg = 1, margins = NULL, legend.inset = -0.3,
-  legend.space = 1)
+  legend.title = "", xlim = NULL, ylim = NULL, cex.axis = 1,
+  cex.title = 1, cex.lab = 1, cex.leg = 1, margins = NULL,
+  legend.inset = -0.3, legend.space = 1)
 }
 \arguments{
 \item{x}{the time variable (numeric vector)}
@@ -37,6 +37,8 @@ do not specify if not relevant)}
 \item{ylab}{label for the y axis}
 
 \item{legend.title}{legend title}
+
+\item{xlim}{limits for the x axis}
 
 \item{ylim}{limits for the y axis}
 

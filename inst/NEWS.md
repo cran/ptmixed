@@ -16,6 +16,14 @@ Each subsection corresponds to a specific package version.
 
 # 1.1.x
 
+# ptmixed 1.1.3
+
+-   Released: August 2022
+-   Updated vignette with package logo and more detailed installation
+    instructions
+-   Added `xlim` argument to `make.spaghetti()`
+-   Changed `xlab` default in `pmf()`
+
 ## ptmixed 1.1.2
 
 -   Released: April 2022

@@ -1,4 +1,20 @@
 ## ---- eval=FALSE, echo=TRUE, results='asis'-----------------------------------
+#  if (!require("BiocManager", quietly = TRUE))
+#      install.packages("BiocManager")
+#  BiocManager::install('ptmixed')
+
+## ---- eval=FALSE, echo=TRUE, results='asis'-----------------------------------
+#  # step 1: install tweeDEseq
+#  if (!require("BiocManager", quietly = TRUE))
+#      install.packages("BiocManager")
+#  BiocManager::install('tweeDEseq')
+#  # step 2: install ptmixed and CRAN dependencies
+#  install.packages('ptmixed')
+
+## ---- eval=TRUE, echo=TRUE, results='asis'------------------------------------
+library(ptmixed)
+
+## ---- eval=FALSE, echo=TRUE, results='asis'-----------------------------------
 #  install.packages('ptmixed')
 
 ## ---- eval=TRUE, echo=TRUE, results='asis'------------------------------------

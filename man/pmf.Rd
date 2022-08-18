@@ -5,7 +5,7 @@
 \title{Probability mass function plot for a discrete variable}
 \usage{
 pmf(x, absolute = T, xlim = NULL, lwd = 1, col = "black",
-  title = NULL, xlab = NULL, bty = "l", cex.title = NULL,
+  title = NULL, xlab = "x", bty = "l", cex.title = NULL,
   cex.axis = NULL)
 }
 \arguments{
@@ -38,11 +38,6 @@ of a discrete variable
 pmf(cars$speed)
 pmf(cars$speed, absolute = FALSE)
 pmf(cars$speed, lwd = 2, col = 'blue')
-}
-\references{
-Signorelli, M., Spitali, P., Tsonaka, R. (2021). Poisson-Tweedie 
-mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
-data. Statistical Modelling, 21 (6), 520-545. URL: https://doi.org/10.1177/1471082X20936017
 }
 \author{
 Mirko Signorelli

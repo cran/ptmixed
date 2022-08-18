@@ -17,9 +17,6 @@
 #' @import graphics
 #' @export
 #' @author Mirko Signorelli
-#' @references Signorelli, M., Spitali, P., Tsonaka, R. (2021). Poisson-Tweedie 
-#' mixed-effects model: a flexible approach for the analysis of longitudinal RNA-seq
-#' data. Statistical Modelling, 21 (6), 520-545. URL: https://doi.org/10.1177/1471082X20936017
 #' @examples
 #' pmf(cars$speed)
 #' pmf(cars$speed, absolute = FALSE)
@@ -27,19 +24,19 @@
 
 pmf = function(x, absolute = T, 
                 xlim = NULL, lwd = 1, col = 'black',
-                title = NULL, xlab = NULL, bty = 'l',
+                title = NULL, xlab = 'x', bty = 'l',
                 cex.title = NULL, cex.axis = NULL) {
   table = table(x)
-  x = as.numeric(row.names(table))
+  xvals = as.numeric(row.names(table))
   freq = as.numeric(table)
   ylab = 'Absolute frequency'
   if (!absolute) {
     freq = freq / sum(freq)
     ylab = 'Relative frequency'
   }
-  if (is.null(xlim)) xlim = c(min(x), max(x))
+  if (is.null(xlim)) xlim = c(min(xvals), max(xvals))
   plot(NULL, xlim = xlim, ylim = c(0, max(freq)), bty = bty,
        cex.axis = cex.axis, cex.lab = cex.axis, cex.main = cex.title,
        xlab = xlab, ylab = ylab, main = title)
-  segments(x0 = x, x1 = x, y0 = 0, y1 = freq, lwd = lwd, col = col)
+  segments(x0 = xvals, x1 = xvals, y0 = 0, y1 = freq, lwd = lwd, col = col)
 }

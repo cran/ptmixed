@@ -1,4 +1,4 @@
-b4b6c898a1f900b244fa99b82e743f0c *DESCRIPTION
+449bb71abd6cab778e9e4c0ce495f3fc *DESCRIPTION
 f869a7da8288db3b8507afa5c5fa0e62 *NAMESPACE
 a4ae0e283e62454b511770733758b27b *R/GHpoints.R
 a29da63e9edae872344bac6e802edc7c *R/PTfunctions.R
@@ -8,10 +8,10 @@ e31e3ad5a32ad0a4c48465dad16fb2f7 *R/cd.R
 9e90d3c9b7254d88fb4a6939704a5867 *R/df1.R
 e7fa8fec292b4105ba2e0e95ea031306 *R/gauher.R
 12e09ad46500fa10a36470a020982f19 *R/loglik.R
-6d616c366731df12a4fe039f1019f266 *R/makespaghetti.R
+8e8e8ed28230815ac67f677ee44a19db *R/makespaghetti.R
 cc1364b1cc0dc7c9260e1950a11a7f8c *R/nbglm.R
 19476a08c6cbbda2421b6d63051718e1 *R/nbmixed.R
-6451bf0872c473737fc5d23b17ca7f54 *R/pmf.R
+0ce6087d92c9e25dc0df7ee4ae87229e *R/pmf.R
 b10e8acb92f34c817e178c2ebf2c770d *R/ptglm.R
 e40e535733e499f89c9acd98c1ba551e *R/ptmixed.R
 d720a83e5f50d64cca43502793f2c87b *R/ranef.R
@@ -23,16 +23,16 @@ a71db9e8d2f6429832c9dd984c04c3ef *R/wald-test.R
 dad7f2c363994a8da33ebd6048a5e5e2 *build/vignette.rds
 e61e54a5424371f231dcbd3199aa819e *data/df1.RData
 bb532720230dbb3ba172bfb0a945b7a2 *inst/CITATION
-df007da99e0eef8e7891f0a9324683fa *inst/NEWS.md
-172417736cc1f914afdab5cdc06440df *inst/doc/Overview_functionalities_ptmixed.R
-fd2e57dcec9ce8210a42b1bbd92d7295 *inst/doc/Overview_functionalities_ptmixed.Rmd
-ed500c4cf8205ed9b5792042c7568e6e *inst/doc/Overview_functionalities_ptmixed.html
+5ba1ab1da8d27e0389e6317ef5b06a8f *inst/NEWS.md
+dfbce0061c7cda884807edb2983736e6 *inst/doc/Overview_functionalities_ptmixed.R
+472a3f8717f48f9319dc3048e5a8b1a3 *inst/doc/Overview_functionalities_ptmixed.Rmd
+1940bbc82b1d31979da499cbd1c230a1 *inst/doc/Overview_functionalities_ptmixed.html
 70185f27d044d7c4585d07ea469325bf *man/df1.Rd
 1b360caa5c03f77bd828a68b7fd72384 *man/loglik.pt.1re.Rd
-251cd61d1e54857583cc58f13b910846 *man/make.spaghetti.Rd
+105c7f2c3cba29773994f7ca0245e710 *man/make.spaghetti.Rd
 5802c913e0edc22c6370e3a77e441cd3 *man/nbglm.Rd
 f463d37303a90dcc13a0eb26e354ef29 *man/nbmixed.Rd
-4aa3e5a23aadd521a166b3615ae409d6 *man/pmf.Rd
+3b6c4461362d451a6193d7869761d361 *man/pmf.Rd
 1149e1a507b9534ebbf8d3bbf0ecd794 *man/ptglm.Rd
 eea15ba5de7e2ebf380c19cb28e0b67c *man/ptmixed.Rd
 c0ce036f7ea2f00aff2333f028a35d7d *man/ranef.Rd
@@ -40,4 +40,4 @@ c0ce036f7ea2f00aff2333f028a35d7d *man/ranef.Rd
 d1ae272f4e68b2c139641ae0aa803feb *man/summary.ptglm.Rd
 96083a3a1c141bfa5787fe29d215bbcc *man/summary.ptglmm.Rd
 271a4a0cfa894498e0cafc8614803530 *man/wald.test.Rd
-fd2e57dcec9ce8210a42b1bbd92d7295 *vignettes/Overview_functionalities_ptmixed.Rmd
+472a3f8717f48f9319dc3048e5a8b1a3 *vignettes/Overview_functionalities_ptmixed.Rmd
